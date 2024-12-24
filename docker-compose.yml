@@ -9,8 +9,8 @@ services:
     ports:
       - "3000:3000"
   
-  server:
-    image: server
+  server-prod:
+    image: server-prod
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -19,9 +19,36 @@ services:
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
     depends_on:
-      - db
+      - db-prod
+    profiles: ["prod"]
   
-  db:
+  server-dev:
+    image: server-dev
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db-dev:5432/postgres-dev
+    depends_on:
+      - db-dev
+    profiles: ["dev"]
+  
+  server-test:
+    image: server-test
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db-test:5432/postgres-test
+    depends_on:
+      - db-test
+    profiles: ["test"]
+  
+  db-prod:
     image: postgres:14
     ports:
       - "5432:5432"
@@ -29,4 +56,24 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
-    
+    profiles: ["prod"]
+  
+  db-dev:
+    image: postgres:14
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres-dev
+    profiles: ["dev"]
+  
+  db-test:
+    image: postgres:14
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres-test
+    profiles: ["test"]
