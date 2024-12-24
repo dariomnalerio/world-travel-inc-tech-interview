@@ -9,7 +9,7 @@ fi
 USERNAME=$1
 
 sudo yum update -y
-yum install docker
+sudo amazon-linux-extras install docker -y
 sudo service docker start
 sudo chkconfig docker on
 sudo usermod -a -G docker $USERNAME
@@ -19,6 +19,6 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 sudo reboot
 
-docker --version
-docker-compose --version
+sudo docker --version
+sudo docker-compose --version
 
