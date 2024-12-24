@@ -5,7 +5,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     environment:
-      - NODE_ENV = production
+      - NODE_ENV=${NODE_ENV}
     ports:
       - "3000:3000"
   
@@ -17,7 +17,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+      - DATABASE_URL=${DATABASE_URL_PROD}
     depends_on:
       - db-prod
     profiles: ["prod"]
@@ -30,7 +30,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@db-dev:5432/postgres-dev
+      - DATABASE_URL=${DATABASE_URL_DEV}
     depends_on:
       - db-dev
     profiles: ["dev"]
@@ -53,9 +53,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB_PROD}
     profiles: ["prod"]
   
   db-dev:
@@ -63,9 +63,9 @@ services:
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres-dev
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD:  ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB_DEV}
     profiles: ["dev"]
   
   db-test:
@@ -73,7 +73,7 @@ services:
     ports:
       - "5434:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres-test
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD:  ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB_TEST}
     profiles: ["test"]
