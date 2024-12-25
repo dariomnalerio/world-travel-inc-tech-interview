@@ -11,7 +11,7 @@ USERNAME=$1
 echo "Installing Docker for $USERNAME..."
 
 sudo yum update -y
-sudo yum install -y docker
+sudo yum install -y docker python3-devel libcrypt-devel
 
 # Create docker group if it doesn't exist
 sudo groupadd -f docker
@@ -20,28 +20,10 @@ sudo groupadd -f docker
 sudo systemctl start docker
 sudo systemctl enable docker
 
-# Add user to docker group
+# Set correct permissions
+sudo chmod 666 /var/run/docker.sock
 sudo usermod -aG docker $USERNAME
 
 # Install Docker Compose
 sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
-
-# Verify installations
-if command -v docker &> /dev/null; then
-    echo "Docker installed successfully"
-    sudo docker --version
-else
-    echo "Docker installation failed"
-    exit 1
-fi
-
-if command -v docker-compose &> /dev/null; then
-    echo "Docker Compose installed successfully"
-    sudo docker-compose --version
-else
-    echo "Docker Compose installation failed"
-    exit 1
-fi
-
-echo "Installation complete!"
