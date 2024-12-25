@@ -7,7 +7,7 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV}
     ports:
-      - "3000:3000"
+      - "80:80"
   
   server-prod:
     image: server-prod
