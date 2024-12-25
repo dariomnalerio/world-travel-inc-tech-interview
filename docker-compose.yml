@@ -1,14 +1,43 @@
 services:
-  client:
-    image: client
+  client-prod:
+    image: client-prod
     build:
       context: ./client
       dockerfile: Dockerfile
     environment:
-      - NODE_ENV=${NODE_ENV}
+      - NODE_ENV=production
     ports:
       - "80:80"
+    networks:
+      - app-network-prod
+    profiles: ["prod"]
   
+  client-dev:
+    image: client-dev
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "80:80"
+    networks:
+      - app-network-dev
+    profiles: ["dev"]
+
+  client-test:
+    image: client-test
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=test
+    ports:
+      - "80:80"
+    networks:
+      - app-network-test
+    profiles: ["test"]
+
   server-prod:
     image: server-prod
     build:
@@ -21,6 +50,8 @@ services:
     depends_on:
       - db-prod
     profiles: ["prod"]
+    networks:
+      - app-network-prod
   
   server-dev:
     image: server-dev
@@ -34,6 +65,8 @@ services:
     depends_on:
       - db-dev
     profiles: ["dev"]
+    networks:
+      - app-network-dev
   
   server-test:
     image: server-test
@@ -47,6 +80,8 @@ services:
     depends_on:
       - db-test
     profiles: ["test"]
+    networks:
+      - app-network-test
   
   db-prod:
     image: postgres:14
@@ -77,3 +112,11 @@ services:
       POSTGRES_PASSWORD:  ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB_TEST}
     profiles: ["test"]
+  
+networks:
+  app-network-prod:
+    driver: bridge
+  app-network-dev:
+    driver: bridge
+  app-network-test:
+    driver: bridge
