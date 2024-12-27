@@ -6,9 +6,10 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type MockUserRepository struct {
+type Mock struct {
 	mock.Mock
 }
+type MockUserRepository = Mock
 
 func (m *MockUserRepository) Create(user *models.User) (models.CreateUserResponse, error) {
 	args := m.Called(user)

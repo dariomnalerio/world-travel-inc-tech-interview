@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"server/config"
 	h "server/internal/api/handlers"
 	m "server/internal/api/middleware"
 
@@ -35,8 +36,9 @@ func (s *Server) setupRoutes() {
 		public.GET("/health", s.healthCheck)
 	}
 
+	auth := m.NewAuthMiddleware(config.GetConfig().JWTSecret)
 	protected := v1.Group("/app")
-	protected.Use(m.AuthMiddleware())
+	protected.Use(auth.AuthMiddleware())
 	{
 		protected.GET("/users", s.userHandler.GetUsers)
 	}
