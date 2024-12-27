@@ -1,20 +1,29 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
-	cors "github.com/rs/cors/wrapper/gin"
+	"log"
+	"server/config"
+	"server/internal/api/handlers"
+	"server/internal/api/repositories"
+	"server/internal/api/services"
+	"server/internal/server"
 )
 
 func main() {
-	r := gin.Default()
-	r.Use(cors.Default())
-	r.GET("/test", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "Hello Technical Interview! 🫡",
-		})
-	})
 
-	r.Run(":8080")
+	_, err := config.LoadConfig()
+
+	if err != nil {
+		log.Fatalf("failed to load config: %v", err)
+	}
+
+	userRepo := repositories.NewUserRepository()
+	userService := services.NewUserService(userRepo)
+	userHandler := handlers.NewUserHandler(userService)
+
+	server := server.NewServer(*userHandler)
+
+	if err := server.Run(":8080"); err != nil {
+		log.Fatalf("failed to start server: %v", err)
+	}
 }
