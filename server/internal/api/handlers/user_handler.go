@@ -29,6 +29,12 @@ func (h *UserHandler) Register(c *gin.Context) {
 		return
 	}
 
+	if !utils.IsValidPassword(req.Password) {
+		err := e.NewError(e.UserErr, e.InvalidCredentials, "password must contain at least 8 characters, at most 32 characters, at least one uppercase letter, at least one lowercase letter, at least one number, and at least one special character", nil)
+		utils.HandleError(c, err)
+		return
+	}
+
 	user, err := h.userService.Register(req.Email, req.Password)
 	if err != nil {
 		utils.HandleError(c, err)
