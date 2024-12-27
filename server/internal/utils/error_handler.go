@@ -14,6 +14,17 @@ type ErrorResponse struct {
 	Detail string           `json:"detail,omitempty"` // Optional field for detailed error messages
 }
 
+// HandleError handles different types of errors and sends an appropriate JSON response.
+// It takes a gin.Context and an error as parameters, determines the type of the error,
+// and sets the corresponding HTTP status code and error response.
+//
+// Parameters:
+//   - c: *gin.Context - the context of the HTTP request
+//   - err: error - the error to be handled
+//
+// The function distinguishes between UserError, AuthError, and InternalError types,
+// logging internal errors for debugging purposes, and sends a JSON response with
+// the appropriate status code and error message.
 func HandleError(c *gin.Context, err error) {
 
 	var (
@@ -48,6 +59,16 @@ func HandleError(c *gin.Context, err error) {
 	c.JSON(statusCode, errorResponse)
 }
 
+// handleUserError processes a UserError and returns the corresponding HTTP status code
+// and an ErrorResponse. It handles specific user error codes such as InvalidEmail and
+// EmailAlreadyExists, and provides appropriate error messages and details.
+//
+// Parameters:
+//   - e: A pointer to a UserError containing the error code and message.
+//
+// Returns:
+//   - int: The HTTP status code corresponding to the user error.
+//   - ErrorResponse: An ErrorResponse struct containing the error message, code, and details.
 func handleUserError(e *errors.UserError) (int, ErrorResponse) {
 	switch e.Code {
 	case errors.InvalidEmail:

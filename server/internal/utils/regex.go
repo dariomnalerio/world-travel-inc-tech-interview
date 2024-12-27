@@ -13,17 +13,15 @@ var (
 	maxLength        = 32
 )
 
-/*
-IsValidPassword reports whether the password is valid.
-
-A valid password must contain:
-  - Minimum eight characters,
-  - At most thirty-two characters,
-  - At least one uppercase letter,
-  - At least one lowercase letter,
-  - At least one number,
-  - At least one special character.
-*/
+// IsValidPassword reports whether the password is valid.
+//
+// A valid password must contain:
+//   - Minimum eight characters,
+//   - At most thirty-two characters,
+//   - At least one uppercase letter,
+//   - At least one lowercase letter,
+//   - At least one number,
+//   - At least one special character.
 func IsValidPassword(password string) bool {
 	if len(password) < minLength || len(password) > maxLength {
 		return false
