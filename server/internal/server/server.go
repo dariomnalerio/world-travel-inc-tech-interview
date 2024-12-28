@@ -8,6 +8,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	cors "github.com/rs/cors/wrapper/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // Server represents the HTTP server that handles incoming requests.
@@ -53,6 +55,7 @@ func (s *Server) setupRoutes() {
 			auth.POST("login", s.userHandler.Login)
 		}
 
+		public.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		public.GET("/health", s.healthCheck)
 	}
 
@@ -64,28 +67,19 @@ func (s *Server) setupRoutes() {
 	}
 }
 
-// Run starts the server on the specified address.
-// It sets up CORS middleware and initializes the routes.
-//
-// Parameters:
-//
-//	addr - the address to listen on, in the form "host:port".
-//
-// Returns:
-//
-//	error - if the server fails to start, an error is returned.
 func (s *Server) Run(addr string) error {
 	s.router.Use(cors.Default())
 	s.setupRoutes()
 	return s.router.Run(addr)
 }
 
-// healthCheck handles the health check endpoint.
-// It responds with a JSON object indicating the server status.
-//
-// @param c *gin.Context - the context for the request
-//
-// @response 200 - JSON object with the server status
+// HealthCheck godoc
+//	@Summary		Checks the health of the server.
+//	@Description	Verifies that the server is running and healthy.
+//	@Tags			health
+//	@Produces		json
+//	@Success		200	{object}	string
+//	@Router			/health [get]
 func (s *Server) healthCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",

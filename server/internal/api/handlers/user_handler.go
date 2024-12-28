@@ -20,6 +20,17 @@ func NewUserHandler(userService services.UserService) *UserHandler {
 	}
 }
 
+// Register godoc
+//
+//	@Summary		Registers a new user.
+//	@Description	Registers a new user with the provided email and password.
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.CreateUserRequest	true	"User registration request"
+//	@Success		201		{object}	models.CreateUserResponse
+//	@Failure		400		{object}	utils.ErrorResponse
+//	@Router			/auth/register [post]
 func (h *UserHandler) Register(c *gin.Context) {
 	var req models.CreateUserRequest
 
@@ -47,6 +58,17 @@ func (h *UserHandler) Register(c *gin.Context) {
 	})
 }
 
+// Login godoc
+//
+//	@Summary		Logs in an existing user.
+//	@Description	Logs in an existing user with the provided email and password.
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.LoginUserRequest	true	"User login request"
+//	@Success		200		{object}	models.LoginUserResponse
+//	@Failure		400		{object}	utils.ErrorResponse
+//	@Router			/auth/login [post]
 func (h *UserHandler) Login(c *gin.Context) {
 	var req models.LoginUserRequest
 
@@ -70,6 +92,19 @@ func (h *UserHandler) Login(c *gin.Context) {
 	})
 }
 
+// GetUsers godoc
+//
+//	@Summary		Retrieves a list of users.
+//	@Description	Retrieves a list of users.
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Security		Bearer
+//	@Success		200		{object}	string
+//
+// @Security BearerAuth
+//
+//	@Router			/users [get]
 func (h *UserHandler) GetUsers(c *gin.Context) {
 	// quick return for demo
 	c.JSON(http.StatusOK, gin.H{
