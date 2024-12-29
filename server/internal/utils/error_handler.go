@@ -41,6 +41,12 @@ func HandleError(c *gin.Context, err error) {
 			Code:   e.Code,
 			Detail: e.Error(),
 		}
+	case *errors.ValidationError:
+		statusCode, errorResponse = http.StatusBadRequest, ErrorResponse{
+			Error:  "Validation error",
+			Code:   e.Code,
+			Detail: e.Error(),
+		}
 	case *errors.InternalError:
 		// Log internal errors for debuggin purposes
 		log.Printf("Internal error: Code=%s, Message=%s, Detail=%v", e.Code, e.Message, e.Err)

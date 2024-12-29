@@ -13,6 +13,7 @@ type Config struct {
 	DB        DBConfig
 	JWTSecret string
 	Port      string
+	DogApiUrl string
 }
 
 type LogConfig struct {
@@ -59,6 +60,7 @@ func LoadConfig() (*Config, error) {
 				URL:      dbURL,
 				Port:     os.Getenv("POSTGRES_PORT"),
 			},
+			DogApiUrl: os.Getenv("DOG_API_URL"),
 		}
 	})
 

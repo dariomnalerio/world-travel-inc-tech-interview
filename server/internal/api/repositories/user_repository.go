@@ -11,6 +11,7 @@ import (
 type UserRepository interface {
 	Create(user *models.User) (models.CreateUserResponse, error)
 	FindByEmail(email string) (*models.User, error)
+	FindByID(id string) (*models.User, error)
 }
 
 // userRepository is a struct that provides methods to interact with the user data in the repository.
@@ -71,4 +72,23 @@ func (r *userRepository) FindByEmail(email string) (*models.User, error) {
 		return nil, nil
 	}
 	return user, nil
+}
+
+// FindByID retrieves a user by their ID.
+// It returns a pointer to the User model if found, otherwise it returns nil.
+// If the user does not exist, the error will also be nil.
+//
+// Parameters:
+//   - id: The ID of the user to be retrieved.
+//
+// Returns:
+//   - *models.User: A pointer to the User model if found, otherwise nil.
+//   - error: An error if there was an issue retrieving the user
+func (r *userRepository) FindByID(id string) (*models.User, error) {
+	for _, user := range users {
+		if user.ID == id {
+			return user, nil
+		}
+	}
+	return nil, nil
 }

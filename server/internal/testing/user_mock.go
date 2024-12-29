@@ -11,6 +11,7 @@ type MockBuilder struct {
 	mock *MockUserRepository
 }
 
+// NewMockBuilder creates a new User Mock Builder
 func NewMockBuilder() *MockBuilder {
 	return &MockBuilder{
 		mock: &MockUserRepository{},
@@ -79,6 +80,25 @@ func (b *MockBuilder) WithInvalidPassword(password string) *MockBuilder {
 	b.mock.On("FindByEmail", mock.Anything).Return(&models.User{
 		PasswordHash: "",
 	}, nil)
+	return b
+}
+
+func (b *MockBuilder) WithFoundByID() *MockBuilder {
+	b.mock.On("FindByID", user.ID).Return(user, nil)
+	return b
+}
+
+func (b *MockBuilder) WithNotFoundByID() *MockBuilder {
+	b.mock.On("FindByID", user.ID).Return(nil, nil)
+	return b
+}
+
+func (b *MockBuilder) WithErrorFindByID() *MockBuilder {
+	internalErr := &e.InternalError{
+		Code:    e.DatabaseError,
+		Message: "failed to find user",
+	}
+	b.mock.On("FindByID", user.ID).Return(nil, internalErr)
 	return b
 }
 

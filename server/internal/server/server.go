@@ -17,6 +17,7 @@ import (
 type Server struct {
 	router      *gin.Engine
 	userHandler *h.UserHandler
+	dogHandler  *h.DogHandler
 }
 
 // NewServer creates a new instance of Server with the provided UserHandler.
@@ -27,10 +28,11 @@ type Server struct {
 //
 // Returns:
 //   - A pointer to a newly created Server instance.
-func NewServer(userHandler h.UserHandler) *Server {
+func NewServer(userHandler h.UserHandler, dogHandler h.DogHandler) *Server {
 	return &Server{
 		router:      gin.Default(),
 		userHandler: &userHandler,
+		dogHandler:  &dogHandler,
 	}
 }
 
@@ -41,6 +43,7 @@ func NewServer(userHandler h.UserHandler) *Server {
 //   - POST /api/v1/auth/register: Registers a new user.
 //   - POST /api/v1/auth/login: Logs in an existing user.
 //   - GET /api/v1/health: Checks the health of the server.
+//   - GET /api/v1/dog/random: Returns a random dog image URL.
 //
 // - Protected routes (requires authentication):
 //   - GET /api/v1/users: Retrieves a list of users.
@@ -55,6 +58,7 @@ func (s *Server) setupRoutes() {
 			auth.POST("login", s.userHandler.Login)
 		}
 
+		public.GET("/dog/random", s.dogHandler.GetRandomImage)
 		public.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		public.GET("/health", s.healthCheck)
 	}
@@ -74,6 +78,7 @@ func (s *Server) Run(addr string) error {
 }
 
 // HealthCheck godoc
+//
 //	@Summary		Checks the health of the server.
 //	@Description	Verifies that the server is running and healthy.
 //	@Tags			health
