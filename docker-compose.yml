@@ -84,10 +84,8 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - SERVER_ENV=development
       - WATCHPACK_POLLING=true
-    develop:
-      watch:
-        - path: ./server
-          action: rebuild
+    volumes:
+      - ./server:/app
     depends_on:
       - db-dev
     profiles: ["dev"]
