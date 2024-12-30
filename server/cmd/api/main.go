@@ -32,7 +32,7 @@ func main() {
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
 
-	dogRepo := repositories.NewDogAPIRepository(cfg.DogApiUrl)
+	dogRepo := repositories.NewDogAPIRepository(cfg.DogApiBaseURL)
 	dogService := services.NewDogService(dogRepo)
 	dogHandler := handlers.NewDogHandler(dogService)
 

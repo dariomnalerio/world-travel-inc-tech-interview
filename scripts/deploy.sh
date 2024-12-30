@@ -18,6 +18,7 @@ scp scripts/install_docker.sh $SSH_USERNAME@$EC2_HOST:~/install_docker.sh
 ssh $SSH_USERNAME@$EC2_HOST "
   chmod +x ~/install_docker.sh
   ~/install_docker.sh $SSH_USERNAME
+  source ~/.bashrc
   echo $DOCKERHUB_TOKEN | docker login --username $DOCKERHUB_USERNAME --password-stdin
   docker-compose pull
   docker-compose down

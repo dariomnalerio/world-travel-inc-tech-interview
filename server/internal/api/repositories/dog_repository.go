@@ -39,7 +39,8 @@ func NewDogAPIRepository(baseURL string) DogRepository {
 //
 // It returns the URL of the picture as a string and an error if any occurred during the process.
 func (r *dogAPIRepository) GetRandomPicture() (string, error) {
-	req, err := http.NewRequest(http.MethodGet, r.baseURL, nil)
+	randomImagePath := "/breeds/image/random"
+	req, err := http.NewRequest(http.MethodGet, r.baseURL+randomImagePath, nil)
 	if err != nil {
 		return "", err
 	}

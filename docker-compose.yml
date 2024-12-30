@@ -3,7 +3,7 @@ services:
     image: client-prod
     build:
       context: ./client
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     environment:
       - NODE_ENV=production
     ports:
@@ -16,11 +16,14 @@ services:
     image: client-dev
     build:
       context: ./client
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     environment:
       - NODE_ENV=development
+    volumes:
+      - ./client:/app
+      - /app/node_modules
     ports:
-      - "80:80"
+      - "3000:3000"
     networks:
       - app-network-dev
     profiles: ["dev"]
@@ -32,10 +35,13 @@ services:
       dockerfile: Dockerfile
     environment:
       - NODE_ENV=test
+    volumes:
+      - ./client:/app
     ports:
       - "80:80"
     networks:
       - app-network-test
+    command: ["npm", "run", "preview"]
     profiles: ["test"]
 
   server-prod:
@@ -46,7 +52,15 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - DATABASE_URL=${DATABASE_URL_PROD}
+      - DATABASE_URL_PROD=${DATABASE_URL_PROD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB_PROD=${POSTGRES_DB_PROD}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - DOG_API_URL=${DOG_API_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - SERVER_ENV=production
+      
     depends_on:
       - db-prod
     profiles: ["prod"]
@@ -61,7 +75,19 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - DATABASE_URL=${DATABASE_URL_DEV}
+      - DATABASE_URL_DEV=${DATABASE_URL_DEV}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB_DEV=${POSTGRES_DB_DEV}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - DOG_API_URL=${DOG_API_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - SERVER_ENV=development
+      - WATCHPACK_POLLING=true
+    develop:
+      watch:
+        - path: ./server
+          action: rebuild
     depends_on:
       - db-dev
     profiles: ["dev"]
@@ -76,7 +102,14 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@db-test:5432/postgres-test
+      - DATABASE_URL_TEST=${DATABASE_URL_TEST}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB_TEST=${POSTGRES_DB_TEST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - DOG_API_URL=${DOG_API_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - SERVER_ENV=testing
     depends_on:
       - db-test
     profiles: ["test"]

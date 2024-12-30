@@ -9,11 +9,11 @@ import (
 )
 
 type Config struct {
-	Logs      LogConfig
-	DB        DBConfig
-	JWTSecret string
-	Port      string
-	DogApiUrl string
+	Logs          LogConfig
+	DB            DBConfig
+	JWTSecret     string
+	Port          string
+	DogApiBaseURL string
 }
 
 type LogConfig struct {
@@ -24,8 +24,9 @@ type LogConfig struct {
 type DBConfig struct {
 	Username string
 	Password string
-	URL      string
+	Name     string
 	Port     string
+	URL      string
 }
 
 var (
@@ -37,14 +38,18 @@ func LoadConfig() (*Config, error) {
 	once.Do(func() {
 		env := os.Getenv("SERVER_ENV")
 		var dbURL string
+		var postgresDB string
 
 		switch env {
 		case "production":
 			dbURL = os.Getenv("DATABASE_URL_PROD")
+			postgresDB = os.Getenv("POSTGRES_DB_PROD")
 		case "development":
 			dbURL = os.Getenv("DATABASE_URL_DEV")
+			postgresDB = os.Getenv("POSTGRES_DB_DEV")
 		case "testing":
 			dbURL = os.Getenv("DATABASE_URL_TEST")
+			postgresDB = os.Getenv("POSTGRES_DB_TEST")
 		}
 
 		cfg = &Config{
@@ -57,10 +62,11 @@ func LoadConfig() (*Config, error) {
 			DB: DBConfig{
 				Username: os.Getenv("POSTGRES_USER"),
 				Password: os.Getenv("POSTGRES_PASSWORD"),
-				URL:      dbURL,
 				Port:     os.Getenv("POSTGRES_PORT"),
+				Name:     postgresDB,
+				URL:      dbURL,
 			},
-			DogApiUrl: os.Getenv("DOG_API_URL"),
+			DogApiBaseURL: "https://dog.ceo/api",
 		}
 	})
 
