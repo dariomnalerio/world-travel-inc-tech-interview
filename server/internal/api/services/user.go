@@ -11,7 +11,8 @@ import (
 
 type UserService interface {
 	Register(email, password string) (models.CreateUserResponse, error)
-	Login(email, password string) (string, error)
+	Login(email, password string) (models.LoginUserResponse, error)
+	FindAll() ([]*models.User, error)
 }
 
 type userService struct {
@@ -81,25 +82,44 @@ func (s *userService) Register(email, password string) (models.CreateUserRespons
 //   - string: A JWT token if authentication is successful.
 //   - error: An error if authentication fails, which could be due to internal server errors,
 //     database errors, user not found, or invalid credentials.
-func (s *userService) Login(email, password string) (string, error) {
+func (s *userService) Login(email, password string) (models.LoginUserResponse, error) {
 	user, err := s.r.FindByEmail(email)
 	if err != nil {
-		return "", e.NewError(e.InternalErr, e.DatabaseError, "internal server error", err)
+		return models.LoginUserResponse{}, e.NewError(e.InternalErr, e.DatabaseError, "internal server error", err)
 	}
 	if user == nil {
-		return "", e.NewError(e.UserErr, e.UserNotFound, "invalid credentials", err)
+		return models.LoginUserResponse{}, e.NewError(e.UserErr, e.UserNotFound, "invalid credentials", err)
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {
-		return "", e.NewError(e.AuthorizationErr, e.InvalidCredentials, "invalid credentials", nil)
+		return models.LoginUserResponse{}, e.NewError(e.AuthorizationErr, e.InvalidCredentials, "invalid credentials", nil)
 	}
 
 	token, err := utils.GenerateJWT(user.ID)
 
 	if err != nil {
-		return "", e.NewError(e.InternalErr, e.JWTError, "internal error authenticating user", err)
+		return models.LoginUserResponse{}, e.NewError(e.InternalErr, e.JWTError, "internal error authenticating user", err)
 	}
 
-	return token, nil
+	response := models.LoginUserResponse{
+		Token: token,
+		ID:    user.ID,
+	}
+
+	return response, nil
+}
+
+// FindAll retrieves a list of all users from the database.
+// It returns a slice of User models and an error, if any.
+//
+// Returns:
+//   - []*models.User: A slice of User models.
+//   - error: An error if there was an issue retrieving the users.
+func (s *userService) FindAll() ([]*models.User, error) {
+	users, err := s.r.FindAll()
+	if err != nil {
+		return nil, e.NewError(e.InternalErr, e.DatabaseError, "internal server error", err)
+	}
+	return users, nil
 }

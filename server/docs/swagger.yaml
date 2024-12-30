@@ -10,6 +10,13 @@ definitions:
     - invalid_credentials
     - invalid_token
     - jwt_error
+    - external_api_error
+    - empty_image_url
+    - malformed_url
+    - invalid_image_extension
+    - invalid_protocol
+    - image_already_liked
+    - image_not_liked
     type: string
     x-enum-varnames:
     - InvalidEmail
@@ -20,6 +27,13 @@ definitions:
     - InvalidCredentials
     - InvalidToken
     - JWTError
+    - ExternalAPIError
+    - EmptyImageURL
+    - MalformedURL
+    - InvalidImageExtension
+    - InvalidProtocol
+    - ImageAlreadyLiked
+    - ImageNotLiked
   models.CreateUserRequest:
     properties:
       email:
@@ -38,6 +52,29 @@ definitions:
       id:
         type: string
     type: object
+  models.GetLikedImagesResponse:
+    properties:
+      images:
+        items:
+          type: string
+        type: array
+    type: object
+  models.LikeImageRequestBody:
+    properties:
+      imageURL:
+        type: string
+    required:
+    - imageURL
+    type: object
+  models.LikeImageResponse:
+    properties:
+      images:
+        items:
+          type: string
+        type: array
+      success:
+        type: boolean
+    type: object
   models.LoginUserRequest:
     properties:
       email:
@@ -51,8 +88,22 @@ definitions:
     type: object
   models.LoginUserResponse:
     properties:
+      id:
+        type: string
       token:
         type: string
+    type: object
+  models.UnlikeImageRequestBody:
+    properties:
+      imageURL:
+        type: string
+    required:
+    - imageURL
+    type: object
+  models.UnlikeImageResponse:
+    properties:
+      success:
+        type: boolean
     type: object
   utils.ErrorResponse:
     properties:
@@ -123,6 +174,25 @@ paths:
       summary: Registers a new user.
       tags:
       - auth
+  /dog/random:
+    get:
+      consumes:
+      - application/json
+      description: Returns a random dog image URL from the Dog API.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      summary: Returns a random dog image URL.
+      tags:
+      - dog
   /health:
     get:
       description: Verifies that the server is running and healthy.
@@ -134,6 +204,97 @@ paths:
       summary: Checks the health of the server.
       tags:
       - health
+  /liked_images/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Unlikes an image for the user.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Image URL
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UnlikeImageRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UnlikeImageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Unlikes an image.
+      tags:
+      - liked_images
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of liked images for the user.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetLikedImagesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Returns a list of liked images.
+      tags:
+      - liked_images
+    post:
+      consumes:
+      - application/json
+      description: Likes an image for the user.
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Image URL
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.LikeImageRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.LikeImageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Likes an image.
+      tags:
+      - liked_images
   /users:
     get:
       consumes:

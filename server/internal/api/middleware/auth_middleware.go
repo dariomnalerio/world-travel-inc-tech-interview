@@ -34,7 +34,7 @@ func NewAuthMiddleware(jwtSecret string) *AuthMiddleware {
 // The JWT token is expected to be in the format "Bearer <token>" and is validated
 // using the HMAC signing method with the secret key stored in the AuthMiddleware
 // struct.
-func (a *AuthMiddleware) AuthMiddleware() gin.HandlerFunc {
+func (a *AuthMiddleware) VerifyJWT() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
@@ -53,6 +53,44 @@ func (a *AuthMiddleware) AuthMiddleware() gin.HandlerFunc {
 
 		if err != nil || !token.Valid {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+
+		sub, err := token.Claims.GetSubject()
+
+		if err != nil || sub == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+
+		c.Set("userID", sub)
+
+		c.Next()
+	}
+}
+
+// VerifyRequestOwnership is a middleware that ensures the user making the request
+// owns the resource they are trying to access. It should be used after the AuthMiddleware
+// which authenticates the token and adds the userID to the gin context.
+//
+// If the userID from the token does not match the userID in the request parameters,
+// the request is aborted with a 403 Forbidden status. If the userID is not found in the
+// context, the request is aborted with a 401 Unauthorized status.
+func (a *AuthMiddleware) VerifyRequestOwnership() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		idFromToken, ok := c.Get("userID")
+
+		if !ok {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+
+		idFromRequest := c.Param("id")
+
+		if idFromToken != idFromRequest {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
+			return
 		}
 
 		c.Next()

@@ -15,9 +15,10 @@ import (
 // Server represents the HTTP server that handles incoming requests.
 // It contains a router for routing the requests and handlers for processing requests.
 type Server struct {
-	router      *gin.Engine
-	userHandler *h.UserHandler
-	dogHandler  *h.DogHandler
+	router             *gin.Engine
+	userHandler        *h.UserHandler
+	dogHandler         *h.DogHandler
+	likedImagesHandler *h.LikedImagesHandler
 }
 
 // NewServer creates a new instance of Server with the provided UserHandler.
@@ -28,25 +29,16 @@ type Server struct {
 //
 // Returns:
 //   - A pointer to a newly created Server instance.
-func NewServer(userHandler h.UserHandler, dogHandler h.DogHandler) *Server {
+func NewServer(userHandler h.UserHandler, dogHandler h.DogHandler, likedImagesHandler h.LikedImagesHandler) *Server {
 	return &Server{
-		router:      gin.Default(),
-		userHandler: &userHandler,
-		dogHandler:  &dogHandler,
+		router:             gin.Default(),
+		userHandler:        &userHandler,
+		dogHandler:         &dogHandler,
+		likedImagesHandler: &likedImagesHandler,
 	}
 }
 
 // setupRoutes initializes the API routes for the server.
-// It sets up the following routes:
-//
-// - Public routes:
-//   - POST /api/v1/auth/register: Registers a new user.
-//   - POST /api/v1/auth/login: Logs in an existing user.
-//   - GET /api/v1/health: Checks the health of the server.
-//   - GET /api/v1/dog/random: Returns a random dog image URL.
-//
-// - Protected routes (requires authentication):
-//   - GET /api/v1/users: Retrieves a list of users.
 func (s *Server) setupRoutes() {
 	v1 := s.router.Group("api/v1")
 
@@ -65,9 +57,16 @@ func (s *Server) setupRoutes() {
 
 	auth := m.NewAuthMiddleware(config.GetConfig().JWTSecret)
 	protected := v1.Group("/")
-	protected.Use(auth.AuthMiddleware())
+	protected.Use(auth.VerifyJWT())
 	{
 		protected.GET("/users", s.userHandler.GetUsers)
+	}
+	liked_images := protected.Group("/liked_images")
+	liked_images.Use(auth.VerifyRequestOwnership())
+	{
+		liked_images.GET("/:id", s.likedImagesHandler.GetLikedImages)
+		liked_images.POST("/:id", s.likedImagesHandler.LikeImage)
+		liked_images.DELETE("/:id", s.likedImagesHandler.UnlikeImage)
 	}
 }
 

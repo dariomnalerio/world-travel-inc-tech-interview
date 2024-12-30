@@ -25,4 +25,5 @@ type CreateUserResponse = UserResponse
 
 type LoginUserResponse struct {
 	Token string `json:"token"`
+	ID    string `json:"id"`
 }

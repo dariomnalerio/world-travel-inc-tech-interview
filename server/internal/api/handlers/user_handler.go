@@ -78,17 +78,18 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := h.userService.Login(req.Email, req.Password)
+	res, err := h.userService.Login(req.Email, req.Password)
 	if err != nil {
 		utils.HandleError(c, err)
 		return
 	}
 
-	c.Header("Authorization", "Bearer "+token)
+	c.Header("Authorization", "Bearer "+res.Token)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "User logged in successfully",
-		"token":   token,
+		"token":   res.Token,
+		"userID":  res.ID,
 	})
 }
 
@@ -106,8 +107,15 @@ func (h *UserHandler) Login(c *gin.Context) {
 //
 //	@Router			/users [get]
 func (h *UserHandler) GetUsers(c *gin.Context) {
-	// quick return for demo
+
+	users, err := h.userService.FindAll()
+
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"users": []string{"user1", "user2"},
+		"users": users,
 	})
 }

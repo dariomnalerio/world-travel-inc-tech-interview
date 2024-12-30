@@ -95,6 +95,35 @@ const docTemplate = `{
                 }
             }
         },
+        "/dog/random": {
+            "get": {
+                "description": "Returns a random dog image URL from the Dog API.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dog"
+                ],
+                "summary": "Returns a random dog image URL.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "description": "Verifies that the server is running and healthy.",
@@ -107,6 +136,149 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/liked_images/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns a list of liked images for the user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "liked_images"
+                ],
+                "summary": "Returns a list of liked images.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GetLikedImagesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Likes an image for the user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "liked_images"
+                ],
+                "summary": "Likes an image.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Image URL",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.LikeImageRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.LikeImageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Unlikes an image for the user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "liked_images"
+                ],
+                "summary": "Unlikes an image.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Image URL",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UnlikeImageRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UnlikeImageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
                         }
                     }
                 }
@@ -155,7 +327,14 @@ const docTemplate = `{
                 "user_not_found",
                 "invalid_credentials",
                 "invalid_token",
-                "jwt_error"
+                "jwt_error",
+                "external_api_error",
+                "empty_image_url",
+                "malformed_url",
+                "invalid_image_extension",
+                "invalid_protocol",
+                "image_already_liked",
+                "image_not_liked"
             ],
             "x-enum-varnames": [
                 "InvalidEmail",
@@ -165,7 +344,14 @@ const docTemplate = `{
                 "UserNotFound",
                 "InvalidCredentials",
                 "InvalidToken",
-                "JWTError"
+                "JWTError",
+                "ExternalAPIError",
+                "EmptyImageURL",
+                "MalformedURL",
+                "InvalidImageExtension",
+                "InvalidProtocol",
+                "ImageAlreadyLiked",
+                "ImageNotLiked"
             ]
         },
         "models.CreateUserRequest": {
@@ -195,6 +381,42 @@ const docTemplate = `{
                 }
             }
         },
+        "models.GetLikedImagesResponse": {
+            "type": "object",
+            "properties": {
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "models.LikeImageRequestBody": {
+            "type": "object",
+            "required": [
+                "imageURL"
+            ],
+            "properties": {
+                "imageURL": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.LikeImageResponse": {
+            "type": "object",
+            "properties": {
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "models.LoginUserRequest": {
             "type": "object",
             "required": [
@@ -214,8 +436,30 @@ const docTemplate = `{
         "models.LoginUserResponse": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "string"
+                },
                 "token": {
                     "type": "string"
+                }
+            }
+        },
+        "models.UnlikeImageRequestBody": {
+            "type": "object",
+            "required": [
+                "imageURL"
+            ],
+            "properties": {
+                "imageURL": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UnlikeImageResponse": {
+            "type": "object",
+            "properties": {
+                "success": {
+                    "type": "boolean"
                 }
             }
         },

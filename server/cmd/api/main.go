@@ -20,7 +20,7 @@ import (
 // @name						Authorization
 func main() {
 
-	_, err := config.LoadConfig()
+	cfg, err := config.LoadConfig()
 
 	if err != nil {
 		log.Fatalf("failed to load config: %v", err)
@@ -32,7 +32,15 @@ func main() {
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
 
-	server := server.NewServer(*userHandler)
+	dogRepo := repositories.NewDogAPIRepository(cfg.DogApiUrl)
+	dogService := services.NewDogService(dogRepo)
+	dogHandler := handlers.NewDogHandler(dogService)
+
+	likedImagesRepo := repositories.NewLikedImagesRepository()
+	likedImagesService := services.NewLikedImagesService(likedImagesRepo, userRepo)
+	likedImagesHandler := handlers.NewLikedImagesHandler(likedImagesService)
+
+	server := server.NewServer(*userHandler, *dogHandler, *likedImagesHandler)
 
 	if err := server.Run(":8080"); err != nil {
 		log.Fatalf("failed to start server: %v", err)

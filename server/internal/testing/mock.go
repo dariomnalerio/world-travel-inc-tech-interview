@@ -68,6 +68,20 @@ func (m *MockUserRepository) FindByID(id string) (*models.User, error) {
 	return args.Get(0).(*models.User), args.Error(1)
 }
 
+// FindAll retrieves all users from the mock repository.
+// It returns a slice of User models and an error if the operation fails.
+//
+// Returns:
+//   - []*models.User: A slice of User models.
+//   - error: An error if the operation fails, otherwise nil.
+func (m *MockUserRepository) FindAll() ([]*models.User, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*models.User), args.Error(1)
+}
+
 // GetRandomPicture retrieves a random dog picture from the mock repository.
 //
 // Returns:
