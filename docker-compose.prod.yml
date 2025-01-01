@@ -1,0 +1,40 @@
+services:
+  client-prod:
+    image: dariomnalerio/client:latest
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "80:80"
+    networks:
+      - app-network-prod
+
+  server-prod:
+    image: dariomnalerio/server:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL_PROD=${DATABASE_URL_PROD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB_PROD=${POSTGRES_DB_PROD}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - DOG_API_URL=${DOG_API_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - SERVER_ENV=production
+    depends_on:
+      - db-prod
+    networks:
+      - app-network-prod
+  
+  db-prod:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB_PROD}
+      
+networks:
+  app-network-prod:
+    driver: bridge

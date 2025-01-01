@@ -1,0 +1,27 @@
+FROM golang:1.23.1-alpine
+
+WORKDIR /app
+
+RUN apk add --no-cache git
+
+RUN go install github.com/githubnemo/CompileDaemon@latest
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+EXPOSE 8080
+
+WORKDIR /app/cmd/api
+
+# Use polling mode for more reliable file watching
+ENTRYPOINT CompileDaemon \
+  -polling \
+  -polling-interval=500 \
+  -verbose \
+  -build="go build -o /app/cmd/api/main /app/cmd/api/main.go" \
+  -command="/app/cmd/api/main" \
+  -directory="/app" \
+  -recursive \
+  -graceful-kill

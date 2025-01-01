@@ -1,0 +1,54 @@
+services:
+  client-dev:
+    image: client-dev
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true  # Enable polling for file watching
+      - WATCHPACK_POLLING=true    # Enable polling for Vite
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network-dev
+  
+  server-dev:
+    image: server-dev
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL_DEV=${DATABASE_URL_DEV}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB_DEV=${POSTGRES_DB_DEV}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - DOG_API_URL=${DOG_API_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - SERVER_ENV=development
+    volumes:
+     - ./server:/app:consistent
+    depends_on:
+      - db-dev
+    networks:
+      - app-network-dev
+  
+  db-dev:
+    image: postgres:14
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD:  ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB_DEV}
+
+networks:
+  app-network-dev:
+    driver: bridge
+  

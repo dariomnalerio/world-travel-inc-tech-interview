@@ -1,0 +1,47 @@
+services:
+  client-test:
+    image: client-test
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    environment:
+      - NODE_ENV=test
+    volumes:
+      - ./client:/app
+    ports:
+      - "80:80"
+    networks:
+      - app-network-test
+    command: ["npm", "run", "preview"]
+  
+  server-test:
+    image: server-test
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL_TEST=${DATABASE_URL_TEST}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB_TEST=${POSTGRES_DB_TEST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - DOG_API_URL=${DOG_API_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - SERVER_ENV=testing
+    depends_on:
+      - db-test
+    networks:
+      - app-network-test
+    
+  db-test:
+    image: postgres:14
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD:  ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB_TEST}
+  
+  

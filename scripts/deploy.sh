@@ -12,7 +12,7 @@ ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
 
 echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
-scp docker-compose.yml $SSH_USERNAME@$EC2_HOST:~/docker-compose.yml
+scp docker-compose.prod.yml $SSH_USERNAME@$EC2_HOST:~/docker-compose.yml
 scp scripts/install_docker.sh $SSH_USERNAME@$EC2_HOST:~/install_docker.sh
 
 ssh $SSH_USERNAME@$EC2_HOST "
