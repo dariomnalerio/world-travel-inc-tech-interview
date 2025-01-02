@@ -284,17 +284,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
+        "/user/{id}": {
             "get": {
                 "security": [
-                    {
-                        "Bearer": []
-                    },
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Retrieves a list of users.",
+                "description": "Retrieves a user by their ID.",
                 "consumes": [
                     "application/json"
                 ],
@@ -304,12 +301,27 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Retrieves a list of users.",
+                "summary": "Retrieves a user by ID.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
                         }
                     }
                 }
@@ -373,10 +385,16 @@ const docTemplate = `{
         "models.CreateUserResponse": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -460,6 +478,26 @@ const docTemplate = `{
             "properties": {
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "passwordHash": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },

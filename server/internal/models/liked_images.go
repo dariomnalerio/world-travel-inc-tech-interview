@@ -26,5 +26,6 @@ type LikeImageResponse struct {
 type UnlikeImageRequestURL RequiredUserID
 type UnlikeImageRequestBody RequiredImageURL
 type UnlikeImageResponse struct {
-	Success bool `json:"success"`
+	Success bool   `json:"success"`
+	Image   string `json:"image"`
 }

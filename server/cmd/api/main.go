@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"server/config"
+	"server/db"
 	"server/docs"
 	"server/internal/api/handlers"
 	"server/internal/api/repositories"
@@ -26,9 +27,15 @@ func main() {
 		log.Fatalf("failed to load config: %v", err)
 	}
 
+	db, err := db.InitDB(cfg.DB.URL)
+	if err != nil {
+		log.Fatalf("failed to connect to database: %v", err)
+	}
+	defer db.Close()
+
 	docs.SwaggerInfo.Schemes = []string{"http"}
 
-	userRepo := repositories.NewUserRepository()
+	userRepo := repositories.NewUserRepository(db)
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
 
@@ -36,13 +43,13 @@ func main() {
 	dogService := services.NewDogService(dogRepo)
 	dogHandler := handlers.NewDogHandler(dogService)
 
-	likedImagesRepo := repositories.NewLikedImagesRepository()
+	likedImagesRepo := repositories.NewLikedImagesRepository(db)
 	likedImagesService := services.NewLikedImagesService(likedImagesRepo, userRepo)
 	likedImagesHandler := handlers.NewLikedImagesHandler(likedImagesService)
 
 	server := server.NewServer(*userHandler, *dogHandler, *likedImagesHandler)
 
-	if err := server.Run(":8080"); err != nil {
+	if err := server.Run(":8080", "api/v1"); err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}
 }

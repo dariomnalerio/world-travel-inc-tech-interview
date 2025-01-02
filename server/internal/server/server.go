@@ -7,6 +7,7 @@ import (
 	m "server/internal/api/middleware"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
 	cors "github.com/rs/cors/wrapper/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -39,8 +40,8 @@ func NewServer(userHandler h.UserHandler, dogHandler h.DogHandler, likedImagesHa
 }
 
 // setupRoutes initializes the API routes for the server.
-func (s *Server) setupRoutes() {
-	v1 := s.router.Group("api/v1")
+func (s *Server) setupRoutes(baseRoute string) {
+	v1 := s.router.Group(baseRoute)
 
 	public := v1.Group("")
 	{
@@ -56,23 +57,26 @@ func (s *Server) setupRoutes() {
 	}
 
 	auth := m.NewAuthMiddleware(config.GetConfig().JWTSecret)
-	protected := v1.Group("/")
+	protected := v1.Group("")
 	protected.Use(auth.VerifyJWT())
+
+	user := protected.Group("/user")
 	{
-		protected.GET("/users", s.userHandler.GetUsers)
+		user.GET("/:id", s.userHandler.GetUser)
 	}
+
 	liked_images := protected.Group("/liked_images")
 	liked_images.Use(auth.VerifyRequestOwnership())
 	{
+		liked_images.DELETE("/:id", s.likedImagesHandler.UnlikeImage)
 		liked_images.GET("/:id", s.likedImagesHandler.GetLikedImages)
 		liked_images.POST("/:id", s.likedImagesHandler.LikeImage)
-		liked_images.DELETE("/:id", s.likedImagesHandler.UnlikeImage)
 	}
 }
 
-func (s *Server) Run(addr string) error {
+func (s *Server) Run(addr, baseRoute string) error {
 	s.router.Use(cors.Default())
-	s.setupRoutes()
+	s.setupRoutes(baseRoute)
 	return s.router.Run(addr)
 }
 

@@ -7,6 +7,7 @@ type User struct {
 	Email        string
 	PasswordHash string
 	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 type UserCredentials struct {
@@ -15,8 +16,10 @@ type UserCredentials struct {
 }
 
 type UserResponse struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
+	ID        string    `json:"id"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type CreateUserRequest = UserCredentials

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"server/internal/api/services"
 	e "server/internal/errors"
@@ -93,22 +94,30 @@ func (h *UserHandler) Login(c *gin.Context) {
 	})
 }
 
-// GetUsers godoc
+// GetUser godoc
 //
-//	@Summary		Retrieves a list of users.
-//	@Description	Retrieves a list of users.
+//	@Summary		Retrieves a user by ID.
+//	@Description	Retrieves a user by their ID.
 //	@Tags			users
 //	@Accept			json
 //	@Produce		json
-//	@Security		Bearer
-//	@Success		200		{object}	string
+//	@Param			id	path	string	true	"User ID"
+//	@Success		200		{object}	models.User
+//	@Failure		400		{object}	utils.ErrorResponse
 //
-// @Security BearerAuth
+//	@Security		BearerAuth
 //
-//	@Router			/users [get]
-func (h *UserHandler) GetUsers(c *gin.Context) {
+//	@Router			/user/{id} [get]
+func (h *UserHandler) GetUser(c *gin.Context) {
+	log.Println("Getting user by ID")
+	var id = c.Param("id")
+	if id == "" {
+		err := e.NewError(e.UserErr, e.InvalidCredentials, "user ID is required", nil)
+		utils.HandleError(c, err)
+		return
+	}
 
-	users, err := h.userService.FindAll()
+	user, err := h.userService.GetUserByID(id)
 
 	if err != nil {
 		utils.HandleError(c, err)
@@ -116,6 +125,10 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"users": users,
+		"user": models.UserResponse{
+			ID:        user.ID,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+		},
 	})
 }

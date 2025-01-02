@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"server/internal/api/services"
 	"server/internal/models"
@@ -34,6 +35,7 @@ func NewLikedImagesHandler(likedImagesService *services.LikedImagesService) *Lik
 //
 //	@Router			/liked_images/{id} [get]
 func (h *LikedImagesHandler) GetLikedImages(c *gin.Context) {
+	log.Default().Println("Getting liked images")
 	var req models.GetLikedImagesRequest
 	if err := c.ShouldBindUri(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -111,28 +113,27 @@ func (h *LikedImagesHandler) LikeImage(c *gin.Context) {
 //
 //	@Router			/liked_images/{id} [delete]
 func (h *LikedImagesHandler) UnlikeImage(c *gin.Context) {
+
 	var body models.UnlikeImageRequestBody
-	if err := c.ShouldBindBodyWithJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-
-		var req models.UnlikeImageRequestURL
-		if err := c.Copy().ShouldBindUri(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-		}
-
-		err := h.likedImagesService.UnlikeImage(req.UserID, body.ImageURL)
-
-		if err != nil {
-			utils.HandleError(c, err)
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"success": "true",
-		})
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
 	}
+
+	var req models.UnlikeImageRequestURL
+	if err := c.ShouldBindUri(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID in URI"})
+		return
+	}
+
+	err := h.likedImagesService.UnlikeImage(req.UserID, body.ImageURL)
+	if err != nil {
+		utils.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": "true",
+		"image":   body.ImageURL,
+	})
 }

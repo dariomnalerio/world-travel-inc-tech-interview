@@ -1,5 +1,11 @@
 package repositories
 
+import (
+	"database/sql"
+	"server/db/queries"
+	e "server/internal/errors"
+)
+
 type LikedImagesRepository interface {
 	GetLikedImages(userID string) ([]string, error)
 	AddLikedImage(userID string, image string) error
@@ -7,14 +13,12 @@ type LikedImagesRepository interface {
 }
 
 type likedImagesRepository struct {
-	// map[userID]map[imageURL]struct{} - using struct{} since we only care about existence
-	// struct{} is an empty struct that takes up zero bytes of memory, which is useful for sets
-	likes map[string]map[string]struct{}
+	db *sql.DB
 }
 
-func NewLikedImagesRepository() *likedImagesRepository {
+func NewLikedImagesRepository(db *sql.DB) *likedImagesRepository {
 	return &likedImagesRepository{
-		likes: make(map[string]map[string]struct{}),
+		db: db,
 	}
 }
 
@@ -28,10 +32,22 @@ func NewLikedImagesRepository() *likedImagesRepository {
 // Returns:
 //   - error: An error if the operation fails, otherwise nil.
 func (r *likedImagesRepository) AddLikedImage(userID, imageURL string) error {
-	if _, exists := r.likes[userID]; !exists {
-		r.likes[userID] = make(map[string]struct{})
+	exists, err := queries.GetLikedImage(r.db, userID, imageURL)
+
+	if err != nil {
+		return err
 	}
-	r.likes[userID][imageURL] = struct{}{}
+
+	if exists {
+		return e.NewError(e.ValidationErr, e.ImageAlreadyLiked, "image already liked", nil)
+	}
+
+	err = queries.AddLikedImage(r.db, userID, imageURL)
+
+	if err != nil {
+		return e.NewError(e.InternalErr, e.DatabaseError, "failed to add liked image", err)
+	}
+
 	return nil
 }
 
@@ -44,9 +60,12 @@ func (r *likedImagesRepository) AddLikedImage(userID, imageURL string) error {
 // Returns:
 //   - error: An error if any issues occur during retrieval
 func (r *likedImagesRepository) RemoveLikedImage(userID, imageURL string) error {
-	if _, exists := r.likes[userID]; exists {
-		delete(r.likes[userID], imageURL)
+	err := queries.RemoveLikedImage(r.db, userID, imageURL)
+
+	if err != nil {
+		return e.NewError(e.InternalErr, e.DatabaseError, "failed to remove liked image", err)
 	}
+
 	return nil
 }
 
@@ -60,12 +79,11 @@ func (r *likedImagesRepository) RemoveLikedImage(userID, imageURL string) error 
 //   - []string: A slice of image URLs liked by the user.
 //   - error: An error if any issues occur during retrieval.
 func (r *likedImagesRepository) GetLikedImages(userID string) ([]string, error) {
-	if userLikes, exists := r.likes[userID]; exists {
-		images := make([]string, 0, len(userLikes))
-		for url := range userLikes {
-			images = append(images, url)
-		}
-		return images, nil
+	imgs, err := queries.GetLikedImages(r.db, userID)
+
+	if err != nil {
+		return nil, e.NewError(e.InternalErr, e.DatabaseError, "failed to get liked images", err)
 	}
-	return []string{}, nil
+
+	return imgs, nil
 }

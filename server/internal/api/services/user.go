@@ -12,7 +12,7 @@ import (
 type UserService interface {
 	Register(email, password string) (models.CreateUserResponse, error)
 	Login(email, password string) (models.LoginUserResponse, error)
-	FindAll() ([]*models.User, error)
+	GetUserByID(id string) (*models.User, error)
 }
 
 type userService struct {
@@ -110,16 +110,14 @@ func (s *userService) Login(email, password string) (models.LoginUserResponse, e
 	return response, nil
 }
 
-// FindAll retrieves a list of all users from the database.
-// It returns a slice of User models and an error, if any.
+// GetUserByID retrieves a user from the database by their ID.
 //
-// Returns:
-//   - []*models.User: A slice of User models.
-//   - error: An error if there was an issue retrieving the users.
-func (s *userService) FindAll() ([]*models.User, error) {
-	users, err := s.r.FindAll()
+// If no user is found with the given ID, it returns (nil, nil).
+func (s *userService) GetUserByID(id string) (*models.User, error) {
+	user, err := s.r.FindByID(id)
 	if err != nil {
-		return nil, e.NewError(e.InternalErr, e.DatabaseError, "internal server error", err)
+		return nil, err
 	}
-	return users, nil
+
+	return user, nil
 }
