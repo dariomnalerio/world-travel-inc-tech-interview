@@ -36,7 +36,7 @@ services:
       - app-network-test
     
   db-test:
-    image: postgres:14
+    image: postgres:17
     ports:
       - "5434:5432"
     environment:
