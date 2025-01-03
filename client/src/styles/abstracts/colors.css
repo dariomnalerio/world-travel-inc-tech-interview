@@ -1,0 +1,9 @@
+:root {
+  --clr-text: hsl(218, 87%, 9%);
+  --clr-bg: hsl(215, 85%, 95%);
+  --clr-primary: hsl(216, 70%, 33%);
+  --clr-secondary: hsl(185, 100%, 25%);
+  --clr-accent: hsl(329, 87%, 43%);
+  --clr-white: #fff;
+  --clr-destructive: #e63946;
+}

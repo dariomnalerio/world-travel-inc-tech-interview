@@ -1,0 +1,24 @@
+@import url("../abstracts/index.css");
+body {
+  max-width: 100vw;
+  min-height: 100vh;
+  background-color: var(--clr-bg);
+  font-family: "Roboto", sans-serif;
+  overflow-x: hidden;
+  letter-spacing: 0.5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--clr-text);
+    font-weight: var(--fw-bold);
+  }
+}
+
+.main-conent {
+  flex: 1;
+}
