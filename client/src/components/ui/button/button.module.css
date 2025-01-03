@@ -1,0 +1,12 @@
+@import url(../../../styles/abstracts/index.css);
+
+.button {
+  color: var(--clr-text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--clr-text);
+  border-radius: var(--radius-md);
+  height: 2rem;
+  padding-inline: 1rem;
+}

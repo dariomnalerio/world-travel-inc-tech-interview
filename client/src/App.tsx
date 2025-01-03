@@ -1,20 +1,14 @@
-import { useEffect, useState } from "react";
-import "./App.css";
+import React from "react";
+import Header from "./components/Header/header";
 
 function App() {
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    fetch("http://localhost:8080/test")
-      .then((res) => res.json())
-      .then((data) => setData(data))
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
-
   return (
-    <>
-      <span>{JSON.stringify(data)}</span>
-    </>
+    <React.Fragment>
+      <Header title="Placeholder" />
+      <main>
+        <h1>Hello front-end</h1>
+      </main>
+    </React.Fragment>
   );
 }
 
