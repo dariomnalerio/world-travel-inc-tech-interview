@@ -1,5 +1,6 @@
 @import url("../abstracts/index.css");
-body {
+body,
+#root {
   max-width: 100vw;
   min-height: 100vh;
   background-color: var(--clr-bg);
@@ -8,17 +9,13 @@ body {
   letter-spacing: 0.5px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    color: var(--clr-text);
-    font-weight: var(--fw-bold);
-  }
+  text-wrap: pretty;
 }
 
-.main-conent {
-  flex: 1;
+h1,
+h2,
+h3,
+h4 {
+  color: var(--clr-text);
+  font-weight: var(--fw-bold);
 }

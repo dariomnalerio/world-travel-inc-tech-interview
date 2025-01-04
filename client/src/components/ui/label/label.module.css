@@ -1,0 +1,7 @@
+.label {
+  display: inline-block;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  white-space: nowrap;
+  margin-block: 0.25rem;
+}

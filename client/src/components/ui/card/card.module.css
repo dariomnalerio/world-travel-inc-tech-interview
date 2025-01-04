@@ -1,0 +1,22 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  padding-inline: 1.5rem;
+  padding-block: 2.5rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 0.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+  background-color: var(--clr-white);
+}
+
+.cardTitle {
+  color: var(--clr-primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.cardContent {
+  padding-block: 1rem;
+}
