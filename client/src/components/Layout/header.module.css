@@ -8,7 +8,9 @@
   gap: 1rem;
   padding-block: 1rem;
   padding-inline: clamp(0.5rem, 2.5% + 0.5rem, 5rem);
-  background-color: var(--clr-secondary);
+  background-color: var(--clr-bg);
+  filter: brightness(0.925);
+  border-bottom: 1px solid var(--clr-border);
 
   .logoContainer {
     display: flex;
@@ -16,7 +18,7 @@
     gap: 0.5rem;
   }
   h1 {
-    color: var(--clr-white);
+    color: var(--clr-text);
     font-size: var(--fs-xl);
   }
   .logo {
@@ -39,6 +41,14 @@
   padding-inline: 1.5rem;
   border-radius: var(--radius-lg);
   transition: filter 0.5 ease;
+}
+
+.linkBtn[data-variant="primary"] {
+  background-color: var(--clr-primary);
+}
+
+.linkBtn[data-variant="secondary"] {
+  background-color: var(--clr-secondary);
 }
 
 .linkBtn:hover {

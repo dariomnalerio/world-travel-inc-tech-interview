@@ -9,7 +9,7 @@ interface HeaderProps {
 }
 
 const Header = ({ title = "Default Title" }: HeaderProps): JSX.Element => {
-  const { changeView } = useView({ initialView: "home" });
+  const { changeView } = useView();
   return (
     <header className={styles.header}>
       <div className={styles.logoContainer}>
@@ -26,6 +26,7 @@ const Header = ({ title = "Default Title" }: HeaderProps): JSX.Element => {
         </Button>
         <Button
           data-testid="registerBtn"
+          data-variant="secondary"
           onClick={() => changeView("register")}
           className={styles.linkBtn}
         >

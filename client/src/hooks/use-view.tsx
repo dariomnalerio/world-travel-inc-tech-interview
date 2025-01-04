@@ -1,17 +1,23 @@
-import { useState, useCallback } from "react";
+import { createContext, use } from "react";
+import { View } from "../types";
 
-type View = "login" | "register" | "home";
+interface ViewContextProps {
+  currentView: View;
+  changeView: (view: View) => void;
+}
 
-type UseViewProps = {
-  initialView?: View;
-};
+export const ViewContext = createContext<ViewContextProps | undefined>(
+  undefined
+);
 
-const useView = ({ initialView = "home" }: UseViewProps) => {
-  const [currentView, setCurrentView] = useState<View>(initialView);
+const useView = () => {
+  const context = use(ViewContext);
 
-  const changeView = useCallback((view: View) => setCurrentView(view), []);
+  if (!context) {
+    throw new Error("useView must be used within a ViewProvider");
+  }
 
-  return { currentView, changeView };
+  return context;
 };
 
 export { useView };
