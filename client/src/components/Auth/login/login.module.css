@@ -1,0 +1,49 @@
+@import url("../../ui/button/button.module.css");
+@import url("../../ui/card/card.module.css");
+
+.card {
+  composes: card;
+  max-width: 700px;
+  width: 100%;
+  padding-inline: 5rem;
+}
+
+.title {
+  color: var(--clr-primary);
+}
+
+.form > * {
+  padding-top: 1rem;
+}
+
+.error {
+  color: var(--clr-destructive);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  height: 20px;
+}
+
+.loginBtn {
+  composes: styledBtn;
+  margin-block: 1.25rem;
+  padding-block: 1.25rem;
+  width: 100%;
+  border-radius: var(--radius-md);
+  gap: 0.5rem;
+}
+
+.noAccountText {
+  text-align: center;
+
+  button {
+    color: var(--clr-accent);
+    font-weight: var(--fw-medium);
+    cursor: pointer;
+  }
+
+  button:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2rem;
+    filter: brightness(1.1);
+  }
+}

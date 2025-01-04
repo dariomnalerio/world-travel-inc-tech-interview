@@ -1,0 +1,8 @@
+.layout {
+  flex: 1;
+  padding-block: 10rem;
+  padding-inline: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
