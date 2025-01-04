@@ -31,3 +31,7 @@
 .styledBtn:hover {
   filter: brightness(1.15);
 }
+
+.styledBtn:disabled {
+  filter: opacity(0.7);
+}

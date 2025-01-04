@@ -1,5 +1,5 @@
-@import url("../../ui/button/button.module.css");
-@import url("../../ui/card/card.module.css");
+@import url("../ui/button/button.module.css");
+@import url("../ui/card/card.module.css");
 
 .card {
   composes: card;
@@ -23,18 +23,17 @@
   height: 20px;
 }
 
-.loginBtn {
+.actionBtn {
   composes: styledBtn;
-  margin-block: 1.25rem;
   padding-block: 1.25rem;
   width: 100%;
   border-radius: var(--radius-md);
   gap: 0.5rem;
 }
 
-.noAccountText {
+.authFooterText {
   text-align: center;
-
+  padding-top: 0.75rem;
   button {
     color: var(--clr-accent);
     font-weight: var(--fw-medium);

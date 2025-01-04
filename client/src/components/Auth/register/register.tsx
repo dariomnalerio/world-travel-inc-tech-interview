@@ -1,9 +1,17 @@
 import MainContentLayout from "../../Layout/main-content-layout";
+import { Card } from "../../ui/card/card";
+import styles from "../auth.module.css";
+import Form from "./register-form";
 
 const Register = () => {
   return (
     <MainContentLayout>
-      <h1>Register</h1>
+      <Card className={styles.card}>
+        <Card.Title>Register</Card.Title>
+        <Card.Content>
+          <Form />
+        </Card.Content>
+      </Card>
     </MainContentLayout>
   );
 };

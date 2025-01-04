@@ -10,6 +10,14 @@ export default defineConfig({
     strictPort: true,
   },
   server: {
+    // for development
+    proxy: {
+      '/api': {
+        target: 'http://server-dev:8080/api/v1',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
     port: 3000,
     strictPort: true,
     host: true,

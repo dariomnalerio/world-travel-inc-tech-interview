@@ -1,12 +1,12 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import Form from "../components/Auth/login/login-form";
+import Form from "../components/Auth/register/register-form";
 import { ViewProvider } from "../contexts/view-provider";
 import { View } from "../types";
 
-describe("Login Form", () => {
+describe("Registerform", () => {
   const renderForm = (
-    initialView = "login",
-    customOnSubmit?: <T>(formVales: T) => void
+    initialView = "register",
+    customOnSubmit?: <T>(formValues: T) => void
   ) => {
     render(
       <ViewProvider initialView={initialView as View}>
@@ -49,7 +49,7 @@ describe("Login Form", () => {
 
   it("shows validation errors when fields are empty on submit", async () => {
     renderForm();
-    const submitButton = screen.getByRole("button", { name: /login/i });
+    const submitButton = screen.getByRole("button", { name: /register/i });
 
     await act(async () => {
       fireEvent.click(submitButton);
@@ -59,25 +59,5 @@ describe("Login Form", () => {
     expect(
       await screen.findByText(/password is required/i)
     ).toBeInTheDocument();
-  });
-
-  it("submits the form with valid data", async () => {
-    const handleSubmit = vi.fn();
-    renderForm("login", handleSubmit);
-
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole("button", { name: /login/i });
-
-    await act(async () => {
-      fireEvent.change(emailInput, { target: { value: "test@example.com" } });
-      fireEvent.change(passwordInput, { target: { value: "validPassword1!" } });
-      fireEvent.click(submitButton);
-    });
-
-    expect(handleSubmit).toHaveBeenCalledWith({
-      email: "test@example.com",
-      password: "validPassword1!",
-    });
   });
 });

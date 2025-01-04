@@ -1,7 +1,7 @@
 import MainContentLayout from "../../Layout/main-content-layout";
 import { Card } from "../../ui/card/card";
-import styles from "./login.module.css";
-import Form from "./form";
+import styles from "../auth.module.css";
+import Form from "./login-form";
 
 const Login = () => {
   return (

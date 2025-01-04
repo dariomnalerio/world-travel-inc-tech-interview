@@ -1,14 +1,16 @@
-import React from "react";
+import React, { JSX, useState } from "react";
 import {
   createValidator,
   combineValidators,
   predicates,
 } from "../../../helpers/validators";
 import { useForm } from "../../../hooks/use-form";
-import styles from "./login.module.css";
+import styles from "../auth.module.css";
 import { Input } from "../../ui/input/input";
 import { Label } from "../../ui/label/label";
 import { LogIn } from "lucide-react";
+import { login } from "../../../api/auth";
+import { useView } from "../../../hooks/use-view";
 
 const emailValidator = combineValidators(
   createValidator(predicates.required, "email", "Email is required"),
@@ -29,11 +31,12 @@ interface LoginFormValues {
   email: string;
   password: string;
 }
-const Form = ({
-  customOnSubmit,
-}: {
+
+type FormProps = {
   customOnSubmit?: (formValues: LoginFormValues) => void;
-}) => {
+};
+
+const Form = ({ customOnSubmit }: FormProps): JSX.Element => {
   const {
     getFieldError,
     handleBlur,
@@ -44,24 +47,28 @@ const Form = ({
     values,
     reset,
   } = useForm<LoginFormValues>(
-    {
-      email: "",
-      password: "",
-    },
-    {
-      validators: {
-        email: emailValidator,
-        password: passwordValidator,
-      },
-    }
+    { email: "", password: "" },
+    { validators: { email: emailValidator, password: passwordValidator } }
   );
+  const [error, setError] = useState<string>("");
+  const { changeView } = useView();
+
+  const handleChangeView = () => changeView("register");
 
   const defaultOnSubmit = async (formValues: LoginFormValues) => {
-    console.log(formValues);
+    setError("");
+    const { email, password } = formValues;
+    const { error } = await login({ email, password });
+    if (error) {
+      setError(error.message);
+      return;
+    }
     reset();
   };
 
+  // this allows us to pass a custom submit handler, which is useful for testing and reusability
   const onSubmit = customOnSubmit ?? defaultOnSubmit;
+
   return (
     <React.Fragment>
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
@@ -72,6 +79,8 @@ const Form = ({
             name="email"
             id="email"
             placeholder="Please enter your email"
+            autoComplete="email"
+            disabled={isSubmitting}
             value={values.email}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -80,13 +89,14 @@ const Form = ({
             {touched.email && getFieldError("email")}
           </span>
         </div>
-        <div className={styles.item}>
+        <div>
           <Label htmlFor="password">Password</Label>
           <Input
             type="password"
             name="password"
             id="password"
             placeholder="Please enter your password"
+            disabled={isSubmitting}
             value={values.password}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -96,17 +106,23 @@ const Form = ({
             {touched.password && getFieldError("password")}
           </span>
         </div>
-        <button
-          disabled={isSubmitting}
-          className={styles.loginBtn}
-          type="submit"
-        >
-          <LogIn size={16} />
-          <span>Login</span>
-        </button>
+        <div>
+          <button
+            disabled={isSubmitting}
+            className={styles.actionBtn}
+            type="submit"
+          >
+            <LogIn size={16} />
+            <span>Login</span>
+          </button>
+          <span className={styles.error}>{error}</span>
+        </div>
       </form>
-      <p className={styles.noAccountText}>
-        Don't have an account? <button type="button">Register</button>
+      <p className={styles.authFooterText}>
+        Don't have an account?{" "}
+        <button type="button" onClick={handleChangeView}>
+          Register
+        </button>
       </p>
     </React.Fragment>
   );
