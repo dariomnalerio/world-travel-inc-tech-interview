@@ -9,7 +9,11 @@ const Tooltip = ({ children, text }: TooltipProps): JSX.Element => {
   return (
     <div className={styles.tooltip}>
       {children}
-      {text.length > 0 && <span className={styles.tooltipText}>{text}</span>}
+      {text.length > 0 && (
+        <span data-testid="tooltipText" className={styles.tooltipText}>
+          {text}
+        </span>
+      )}
     </div>
   );
 };
