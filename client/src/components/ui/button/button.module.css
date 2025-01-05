@@ -28,6 +28,10 @@
   background-color: var(--clr-secondary);
 }
 
+.styledBtn[data-variant="accent"] {
+  background-color: var(--clr-accent);
+}
+
 .styledBtn:hover {
   filter: brightness(1.15);
 }

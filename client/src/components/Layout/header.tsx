@@ -12,10 +12,13 @@ const Header = ({ title = "Default Title" }: HeaderProps): JSX.Element => {
   const { changeView } = useView();
   return (
     <header className={styles.header}>
-      <div className={styles.logoContainer}>
+      <button
+        className={styles.logoContainer}
+        onClick={() => changeView("home")}
+      >
         <PawPrint data-testid="logo" className={styles.logo} size={32} />
-        <h1>{title}</h1>
-      </div>
+        <span>{title}</span>
+      </button>
       <nav>
         <Button
           data-testid="loginBtn"

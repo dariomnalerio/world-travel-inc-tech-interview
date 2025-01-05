@@ -1,6 +1,6 @@
 .layout {
   flex: 1;
-  padding-block: 10rem;
+  padding-block: clamp(1rem, 5vw, 10rem);
   padding-inline: 0.5rem;
   display: flex;
   flex-direction: column;

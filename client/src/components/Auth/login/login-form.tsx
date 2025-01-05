@@ -64,6 +64,7 @@ const Form = ({ customOnSubmit }: FormProps): JSX.Element => {
       return;
     }
     reset();
+    changeView("home");
   };
 
   // this allows us to pass a custom submit handler, which is useful for testing and reusability

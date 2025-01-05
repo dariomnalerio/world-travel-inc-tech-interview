@@ -1,6 +1,7 @@
-import { JSX } from "react";
+import React, { JSX } from "react";
 import styles from "./main-content-layout.module.css";
-type MainContentLayoutProps = {
+
+type MainContentLayoutProps = React.ComponentPropsWithRef<"main"> & {
   children: React.ReactNode;
 };
 

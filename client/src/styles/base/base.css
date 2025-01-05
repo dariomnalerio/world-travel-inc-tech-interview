@@ -1,15 +1,22 @@
 @import url("../abstracts/index.css");
+@import url("https://fonts.googleapis.com/css?family=Belgrano:900|Belgrano:700|Belgrano:500|Belgrano:400");
 body,
 #root {
   max-width: 100vw;
   min-height: 100vh;
   background-color: var(--clr-bg);
-  font-family: "Roboto", sans-serif;
+  font-family: "Belgrano";
+  font-weight: var(--fw-normal);
   overflow-x: hidden;
   letter-spacing: 0.5px;
   display: flex;
   flex-direction: column;
   text-wrap: pretty;
+}
+
+p,
+span {
+  color: var(--clr-text);
 }
 
 h1,
