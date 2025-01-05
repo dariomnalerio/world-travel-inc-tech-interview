@@ -39,7 +39,16 @@ func NewAuthMiddleware(jwtSecret string) *AuthMiddleware {
 func (a *AuthMiddleware) VerifyJWT() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-		tokenString := c.GetHeader("Authorization")
+		var tokenString string
+
+		headerTokenString := c.GetHeader("Authorization")
+		cookieTokenSlice := c.Request.CookiesNamed("auth_token")
+
+		if len(cookieTokenSlice) > 0 {
+			tokenString = cookieTokenSlice[0].Value
+		} else {
+			tokenString = headerTokenString
+		}
 
 		if tokenString == "" {
 			utils.HandleError(c, e.NewError(e.AuthorizationErr, e.InvalidToken, "unauthorized", nil))
