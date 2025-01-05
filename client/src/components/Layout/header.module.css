@@ -37,4 +37,5 @@
 
 .linkBtn {
   composes: styledBtn;
+  gap: 0.25rem;
 }

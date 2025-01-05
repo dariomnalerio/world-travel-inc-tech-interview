@@ -1,20 +1,37 @@
 import MainContentLayout from "../Layout/main-content-layout";
 import styles from "./landing.module.css";
 import { useGetRandomDog } from "../../hooks/use-get-random-dog";
-import { JSX, useCallback, useEffect, useState } from "react";
+import { JSX, useCallback, useEffect } from "react";
 import { CardSection } from "./card-section";
+import { useAuth } from "../../hooks/use-auth";
+import { useLikeImage } from "../../hooks/use-like-image";
 
 const Landing = (): JSX.Element => {
+  const { userId } = useAuth();
   const { fetchNextDog, isFetching, currentUrl } = useGetRandomDog();
-  const [likeCurrentDog, setLikeCurrentDog] = useState(false);
+  // TODO: handle unlogged user case
+  const { isLiked, likeDogImage, unlikeDogImage } = useLikeImage(
+    userId!,
+    currentUrl
+  );
 
-  const handleLike = () => {
-    setLikeCurrentDog((prev) => !prev);
+  const handleLikeClick = async () => {
+    try {
+      if (!userId) {
+        return;
+      }
+      if (isLiked) {
+        await unlikeDogImage();
+      } else {
+        await likeDogImage();
+      }
+    } catch (error) {
+      console.error("Like dog image error:", error);
+    }
   };
 
   const handleFetchNextDog = useCallback(() => {
     fetchNextDog();
-    setLikeCurrentDog(false);
   }, [fetchNextDog]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -44,9 +61,9 @@ const Landing = (): JSX.Element => {
           {...{
             currentUrl,
             fetchNextDog: handleFetchNextDog,
-            handleLike,
+            handleLike: handleLikeClick,
             isFetching,
-            likeCurrentDog,
+            likeCurrentDog: isLiked,
           }}
         />
       </section>

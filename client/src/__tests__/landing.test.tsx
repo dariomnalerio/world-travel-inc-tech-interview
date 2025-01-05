@@ -3,6 +3,7 @@ import {
   CardSection,
   CardSectionProps,
 } from "../components/Landing/card-section";
+import { AuthProvider } from "../contexts/auth-provider";
 
 describe("Landing Card Section", () => {
   const renderCardSection = (customProps?: Partial<CardSectionProps>) => {
@@ -22,7 +23,11 @@ describe("Landing Card Section", () => {
     };
 
     const props = { ...defaultProps, ...customProps };
-    render(<CardSection {...props} />);
+    render(
+      <AuthProvider>
+        <CardSection {...props} />
+      </AuthProvider>
+    );
   };
 
   it("should render the card section", () => {

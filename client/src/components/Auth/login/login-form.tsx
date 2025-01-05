@@ -11,6 +11,7 @@ import { Label } from "../../ui/label/label";
 import { LogIn } from "lucide-react";
 import { login } from "../../../api/auth";
 import { useView } from "../../../hooks/use-view";
+import { useAuth } from "../../../hooks/use-auth";
 
 const emailValidator = combineValidators(
   createValidator(predicates.required, "email", "Email is required"),
@@ -52,17 +53,19 @@ const Form = ({ customOnSubmit }: FormProps): JSX.Element => {
   );
   const [error, setError] = useState<string>("");
   const { changeView } = useView();
+  const { updateUserId } = useAuth();
 
   const handleChangeView = () => changeView("register");
 
   const defaultOnSubmit = async (formValues: LoginFormValues) => {
     setError("");
     const { email, password } = formValues;
-    const { error } = await login({ email, password });
+    const { error, data } = await login({ email, password });
     if (error) {
       setError(error.message);
       return;
     }
+    updateUserId(data.userId);
     reset();
     changeView("home");
   };

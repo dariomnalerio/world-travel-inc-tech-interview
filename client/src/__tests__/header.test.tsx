@@ -3,13 +3,16 @@ import Header from "../components/Layout/header";
 import * as useViewModule from "../hooks/use-view";
 import { ViewProvider } from "../contexts/view-provider";
 import { View } from "../types";
-
+import { AuthProvider } from "../contexts/auth-provider";
+import * as useAuthModule from "../hooks/use-auth";
 describe("Header", () => {
   const renderHeader = (initialView = "home", title?: string) => {
     render(
-      <ViewProvider initialView={initialView as View}>
-        <Header title={title} />
-      </ViewProvider>
+      <AuthProvider>
+        <ViewProvider initialView={initialView as View}>
+          <Header title={title} />
+        </ViewProvider>
+      </AuthProvider>
     );
   };
 
@@ -72,5 +75,31 @@ describe("Header", () => {
     fireEvent.click(registerButton);
 
     expect(changeViewMock).toHaveBeenCalledWith("register");
+  });
+
+  it("renders the logout button when a user is logged in", () => {
+    const userId = "123";
+    vi.spyOn(useAuthModule, "useAuth").mockReturnValue({
+      userId,
+      updateUserId: vi.fn(),
+      logout: vi.fn(),
+    });
+
+    renderHeader();
+    const logoutButton = screen.getByTestId("logoutBtn");
+    expect(logoutButton).toBeInTheDocument();
+  });
+
+  it("renders the profile button when a user is logged in", () => {
+    const userId = "123";
+    vi.spyOn(useAuthModule, "useAuth").mockReturnValue({
+      userId,
+      updateUserId: vi.fn(),
+      logout: vi.fn(),
+    });
+
+    renderHeader();
+    const profileButton = screen.getByTestId("profileBtn");
+    expect(profileButton).toBeInTheDocument();
   });
 });

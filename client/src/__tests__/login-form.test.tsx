@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import Form from "../components/Auth/login/login-form";
 import { ViewProvider } from "../contexts/view-provider";
 import { View } from "../types";
+import { AuthProvider } from "../contexts/auth-provider";
 
 describe("Login Form", () => {
   const renderForm = (
@@ -9,9 +10,11 @@ describe("Login Form", () => {
     customOnSubmit?: <T>(formVales: T) => void
   ) => {
     render(
-      <ViewProvider initialView={initialView as View}>
-        <Form customOnSubmit={customOnSubmit} />
-      </ViewProvider>
+      <AuthProvider>
+        <ViewProvider initialView={initialView as View}>
+          <Form customOnSubmit={customOnSubmit} />
+        </ViewProvider>
+      </AuthProvider>
     );
   };
 
