@@ -12,6 +12,8 @@ import (
 )
 
 var jwtSecret = "secret"
+var authErrJSON = `{"error":"Authentication error","code":"invalid_token","detail":"unauthorized"}`
+var forbiddenErrJSON = `{"error":"Forbidden", "code":"invalid_token", "detail":"forbidden"}`
 
 func TestVerifyJWT(t *testing.T) {
 	gin.SetMode(gin.TestMode)
@@ -31,7 +33,7 @@ func TestVerifyJWT(t *testing.T) {
 		router.ServeHTTP(resp, req)
 
 		assert.Equal(t, http.StatusUnauthorized, resp.Code)
-		assert.JSONEq(t, `{"error": "Unauthorized"}`, resp.Body.String())
+		assert.JSONEq(t, authErrJSON, resp.Body.String())
 	})
 
 	t.Run("invalid token", func(t *testing.T) {
@@ -49,7 +51,7 @@ func TestVerifyJWT(t *testing.T) {
 		router.ServeHTTP(resp, req)
 
 		assert.Equal(t, http.StatusUnauthorized, resp.Code)
-		assert.JSONEq(t, `{"error": "Unauthorized"}`, resp.Body.String())
+		assert.JSONEq(t, authErrJSON, resp.Body.String())
 	})
 
 	t.Run("valid token", func(t *testing.T) {
@@ -103,7 +105,7 @@ func TestVerifyJWT(t *testing.T) {
 		assert.JSONEq(t, `{"userID":"1234567890"}`, resp.Body.String())
 	})
 
-	t.Run("userID missing from token ", func(t *testing.T) {
+	t.Run("userID missing from token", func(t *testing.T) {
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"iat": 1516239022,
 		})
@@ -114,8 +116,7 @@ func TestVerifyJWT(t *testing.T) {
 
 		router.Use(a.VerifyJWT())
 		router.GET("/test", func(c *gin.Context) {
-			userID, _ := c.Get("userID")
-			c.JSON(http.StatusOK, gin.H{"userID": userID})
+			c.Status(http.StatusOK)
 		})
 
 		req, _ := http.NewRequest(http.MethodGet, "/test", nil)
@@ -125,7 +126,7 @@ func TestVerifyJWT(t *testing.T) {
 		router.ServeHTTP(resp, req)
 
 		assert.Equal(t, http.StatusUnauthorized, resp.Code)
-		assert.JSONEq(t, `{"error": "Unauthorized"}`, resp.Body.String())
+		assert.JSONEq(t, authErrJSON, resp.Body.String())
 	})
 
 }
@@ -162,7 +163,7 @@ func TestVerifyRequestOwnership(t *testing.T) {
 		assert.JSONEq(t, `{"message": "OK"}`, resp.Body.String())
 	})
 
-	t.Run("valid token bust mistmatched user ID", func(t *testing.T) {
+	t.Run("valid token but mistmatched user ID", func(t *testing.T) {
 		req, _ := http.NewRequest(http.MethodGet, "/test/456", nil)
 		req.Header.Set("Authorization", "Bearer "+validTokenString)
 		resp := httptest.NewRecorder()
@@ -170,18 +171,18 @@ func TestVerifyRequestOwnership(t *testing.T) {
 		router.ServeHTTP(resp, req)
 
 		assert.Equal(t, http.StatusForbidden, resp.Code)
-		assert.JSONEq(t, `{"error": "Forbidden"}`, resp.Body.String())
+		assert.JSONEq(t, forbiddenErrJSON, resp.Body.String())
 	})
 
 	t.Run("missing userID in context", func(t *testing.T) {
-		req, _ := http.NewRequest(http.MethodGet, "/resource/123", nil)
+		req, _ := http.NewRequest(http.MethodGet, "/test/123", nil)
 		req.Header.Set("Authorization", "Bearer "+invalidTokenString)
 		resp := httptest.NewRecorder()
 
 		router.ServeHTTP(resp, req)
 
 		assert.Equal(t, http.StatusUnauthorized, resp.Code)
-		assert.JSONEq(t, `{"error":"Unauthorized"}`, resp.Body.String())
+		assert.JSONEq(t, authErrJSON, resp.Body.String())
 	})
 
 }

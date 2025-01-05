@@ -46,3 +46,35 @@ func GenerateJWT(userId string) (string, error) {
 
 	return signedToken, nil
 }
+
+// RefreshJWT generates a new JWT token with an extended expiration time.
+// The new token is signed using the secret key from the configuration and includes the same claims as the original token.
+//
+// Parameters:
+// - tokenString: The original JWT token that needs to be refreshed.
+//
+// Returns:
+// - A signed JWT with an extended expiration time.
+// - An error if there was a problem refreshing the token.
+func RefreshJWT(tokenString string) (string, error) {
+	cfg := config.GetConfig()
+	jwtKey := []byte(cfg.JWTSecret)
+
+	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
+	if err != nil {
+		return "", err
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+
+	newToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	signedToken, err := newToken.SignedString(jwtKey)
+
+	if err != nil {
+		return "", err
+	}
+
+	return signedToken, nil
+}

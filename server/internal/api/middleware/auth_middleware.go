@@ -1,7 +1,9 @@
 package middleware
 
 import (
-	"net/http"
+	e "server/internal/errors"
+	"server/internal/utils"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -40,7 +42,7 @@ func (a *AuthMiddleware) VerifyJWT() gin.HandlerFunc {
 		tokenString := c.GetHeader("Authorization")
 
 		if tokenString == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			utils.HandleError(c, e.NewError(e.AuthorizationErr, e.InvalidToken, "unauthorized", nil))
 			return
 		}
 
@@ -52,17 +54,32 @@ func (a *AuthMiddleware) VerifyJWT() gin.HandlerFunc {
 		})
 
 		if err != nil || !token.Valid {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			utils.HandleError(c, e.NewError(e.AuthorizationErr, e.InvalidToken, "unauthorized", nil))
 			return
 		}
 
 		sub, err := token.Claims.GetSubject()
 
 		if err != nil || sub == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			utils.HandleError(c, e.NewError(e.AuthorizationErr, e.InvalidToken, "unauthorized", nil))
 			return
 		}
 
+		// if token has 8 or less hours left, refresh it
+		expirationTime, err := token.Claims.GetExpirationTime()
+		if err != nil {
+			utils.HandleError(c, e.NewError(e.AuthorizationErr, e.InvalidToken, "unauthorized", nil))
+			return
+		}
+
+		if expirationTime != nil && time.Until(expirationTime.Time) < 8*time.Hour {
+			newToken, err := utils.RefreshJWT(tokenString[len("Bearer "):])
+			if err != nil {
+				utils.HandleError(c, e.NewError(e.AuthorizationErr, e.InvalidToken, "unauthorized", nil))
+				return
+			}
+			c.Header("Authorization", "Bearer "+newToken)
+		}
 		c.Set("userID", sub)
 
 		c.Next()
@@ -82,14 +99,14 @@ func (a *AuthMiddleware) VerifyRequestOwnership() gin.HandlerFunc {
 		idFromToken, ok := c.Get("userID")
 
 		if !ok {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			utils.HandleError(c, e.NewError(e.AuthorizationErr, e.InvalidToken, "unauthorized", nil))
 			return
 		}
 
 		idFromRequest := c.Param("id")
 
 		if idFromToken != idFromRequest {
-			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
+			utils.HandleError(c, e.NewError(e.ForbiddenErr, e.InvalidToken, "forbidden", nil))
 			return
 		}
 

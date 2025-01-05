@@ -95,6 +95,34 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/verify": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Verifies that the user is authenticated.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Verifies user authentication.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/dog/random": {
             "get": {
                 "description": "Returns a random dog image URL from the Dog API.",
@@ -476,6 +504,9 @@ const docTemplate = `{
         "models.UnlikeImageResponse": {
             "type": "object",
             "properties": {
+                "image": {
+                    "type": "string"
+                },
                 "success": {
                     "type": "boolean"
                 }

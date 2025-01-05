@@ -86,7 +86,8 @@ func (h *UserHandler) Login(c *gin.Context) {
 	}
 
 	c.Header("Authorization", "Bearer "+res.Token)
-
+	// http only, secure, localhost as domain
+	c.SetCookie("auth_token", res.Token, 3600, "/", "", false, true)
 	c.JSON(http.StatusOK, gin.H{
 		"message": "User logged in successfully",
 		"token":   res.Token,
@@ -130,5 +131,30 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 		},
+	})
+}
+
+// VerifyAuth godoc
+//
+//	@Summary		Verifies user authentication.
+//	@Description	Verifies that the user is authenticated.
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Success		200		{object}	string
+//
+//	@Security		BearerAuth
+//
+//	@Router			/auth/verify [get]
+func (h *UserHandler) VerifyAuth(c *gin.Context) {
+	userID, exists := c.Get("userID")
+	if !exists {
+		utils.HandleError(c, e.NewError(e.UserErr, e.InvalidToken, "unauthorized", nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User authenticated",
+		"userID":  userID,
 	})
 }

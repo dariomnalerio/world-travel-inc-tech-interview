@@ -47,6 +47,7 @@ func (s *Server) setupRoutes(baseRoute string) {
 	{
 		auth := public.Group("/auth")
 		{
+			// Verify Auth Route is in protected group
 			auth.POST("register", s.userHandler.Register)
 			auth.POST("login", s.userHandler.Login)
 		}
@@ -59,7 +60,9 @@ func (s *Server) setupRoutes(baseRoute string) {
 	auth := m.NewAuthMiddleware(config.GetConfig().JWTSecret)
 	protected := v1.Group("")
 	protected.Use(auth.VerifyJWT())
-
+	{
+		protected.GET("/auth/verify", s.userHandler.VerifyAuth)
+	}
 	user := protected.Group("/user")
 	{
 		user.GET("/:id", s.userHandler.GetUser)

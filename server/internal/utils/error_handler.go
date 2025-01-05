@@ -35,6 +35,12 @@ func HandleError(c *gin.Context, err error) {
 	switch e := err.(type) {
 	case *errors.UserError:
 		statusCode, errorResponse = handleUserError(e)
+	case *errors.ForbiddenError:
+		statusCode, errorResponse = http.StatusForbidden, ErrorResponse{
+			Error:  "Forbidden",
+			Code:   e.Code,
+			Detail: e.Error(),
+		}
 	case *errors.AuthError:
 		statusCode, errorResponse = http.StatusUnauthorized, ErrorResponse{
 			Error:  "Authentication error",
@@ -61,7 +67,7 @@ func HandleError(c *gin.Context, err error) {
 			Error: "Unknown error ocurred",
 		}
 	}
-
+	c.Abort()
 	c.JSON(statusCode, errorResponse)
 }
 

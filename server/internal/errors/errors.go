@@ -9,6 +9,7 @@ type ErrorType string
 const (
 	UserErr          ErrorType = "user_error"
 	AuthorizationErr ErrorType = "authorization_error"
+	ForbiddenErr     ErrorType = "forbidden_error"
 	InternalErr      ErrorType = "internal_error"
 	ValidationErr    ErrorType = "validation_error"
 )
@@ -104,6 +105,23 @@ func (e *ValidationError) Unwrap() error {
 	return e.Err
 }
 
+type ForbiddenError struct {
+	Code    ErrorCode
+	Message string
+	Err     error
+}
+
+func (e *ForbiddenError) Error() string {
+	if e.Err != nil {
+		return fmt.Sprintf("%s: %v", e.Message, e.Err)
+	}
+	return e.Message
+}
+
+func (e *ForbiddenError) Unwrap() error {
+	return e.Err
+}
+
 type InternalError struct {
 	Code    ErrorCode
 	Message string
@@ -148,6 +166,12 @@ func NewError(errType ErrorType, code ErrorCode, message string, err error) erro
 		}
 	case "validation_error":
 		return &ValidationError{
+			Code:    code,
+			Message: message,
+			Err:     err,
+		}
+	case "forbidden_error":
+		return &ForbiddenError{
 			Code:    code,
 			Message: message,
 			Err:     err,
