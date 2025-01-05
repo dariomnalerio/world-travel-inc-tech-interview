@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "."
 import { ErrorCodes } from "../helpers/errors";
-import { AuthCredentials, ErrorResponse, LoginResponse, RegisterResponse, Result } from "../types";
+import { AuthCredentials, ErrorResponse, LoginResponse, RegisterResponse, Result, VerifyAuthResponse } from "../types";
 
 
 export async function login({ email, password }: AuthCredentials): Promise<Result<ErrorResponse, LoginResponse>> {
@@ -27,9 +27,15 @@ export async function login({ email, password }: AuthCredentials): Promise<Resul
       }
     }
 
+    const token = data.token;
+    const userId = data.userID;
+
     return {
       error: null,
-      data,
+      data: {
+        token,
+        userId,
+      },
     }
 
   } catch (error) {
@@ -75,6 +81,48 @@ export async function register({ email, password }: AuthCredentials): Promise<Re
 
   } catch (error) {
     console.error("Register error:", error);
+
+    return {
+      data: null,
+      error: {
+        code: "database_error",
+        message: ErrorCodes.database_error,
+      }
+    }
+  }
+}
+
+export async function verifyAuth(): Promise<Result<ErrorResponse, VerifyAuthResponse>> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/verify`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      const errorCode = data.code as keyof typeof ErrorCodes;
+      return {
+        data: null,
+        error: {
+          code: errorCode ?? "database_error",
+          message: ErrorCodes[errorCode] ?? ErrorCodes.database_error,
+        }
+      }
+    }
+    const userId = data.userID;
+
+    return {
+      error: null,
+      data: {
+        userId
+      },
+    }
+  } catch (error) {
+    console.error("Verify auth error:", error);
 
     return {
       data: null,

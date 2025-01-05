@@ -31,11 +31,8 @@ export interface RandomImageResponse {
 }
 
 export interface LoginResponse {
-  token?: string;
-  user?: {
-    id: string;
-    email: string;
-  }
+  token: string;
+  userId: string;
 }
 
 export interface RegisterResponse {
@@ -45,3 +42,11 @@ export interface RegisterResponse {
   created_at: string;
 }
 
+export interface VerifyAuthResponse {
+  userId: string;
+}
+
+export interface LikeDogImageResponse {
+  imageUrl: string;
+  success: true;
+}
