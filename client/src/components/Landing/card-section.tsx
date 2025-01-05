@@ -1,6 +1,6 @@
 import { JSX } from "react";
 import { Card } from "../ui/card/card";
-import { Heart, RefreshCcw } from "lucide-react";
+import { Heart, Loader2, RefreshCcw } from "lucide-react";
 import styles from "./landing.module.css";
 import { Button } from "../ui/button/button";
 import { Tooltip } from "../ui/tooltip/tooltip";
@@ -27,8 +27,10 @@ const CardSection = ({
   return (
     <Card data-testid="card" className={styles.card}>
       <Card.Content className={styles.cardContent}>
-        {isFetching && !!currentUrl ? (
-          <div className={styles.imgLoading}></div>
+        {isFetching && !currentUrl ? (
+          <div className={styles.imgLoading}>
+            <Loader2 />
+          </div>
         ) : (
           <img className={styles.img} src={currentUrl} alt="Random Dog" />
         )}

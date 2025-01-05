@@ -27,6 +27,7 @@
   composes: styledBtn;
   padding-block: 1.25rem;
   width: 100%;
+  color: var(--clr-white);
   border-radius: var(--radius-md);
   gap: 0.5rem;
 }

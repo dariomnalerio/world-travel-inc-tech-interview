@@ -117,7 +117,7 @@ const Form = ({ customOnSubmit }: FormProps): JSX.Element => {
             type="submit"
           >
             <LogIn size={16} />
-            <span>Login</span>
+            Login
           </button>
           <span className={styles.error}>{error}</span>
         </div>
