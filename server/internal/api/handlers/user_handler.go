@@ -86,8 +86,9 @@ func (h *UserHandler) Login(c *gin.Context) {
 	}
 
 	c.Header("Authorization", "Bearer "+res.Token)
-	// http only, secure, localhost as domain
-	c.SetCookie("auth_token", "Bearer "+res.Token, 3600, "/", "", false, true)
+	// not http only, secure, localhost as domain
+	// would update for prod app
+	c.SetCookie("auth_token", "Bearer "+res.Token, 3600, "/", "", false, false)
 	c.JSON(http.StatusOK, gin.H{
 		"message": "User logged in successfully",
 		"token":   res.Token,
