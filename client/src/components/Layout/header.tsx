@@ -17,7 +17,7 @@ const Header = ({ title = "Default Title" }: HeaderProps): JSX.Element => {
         onClick={() => changeView("home")}
       >
         <PawPrint data-testid="logo" className={styles.logo} size={32} />
-        <span>{title}</span>
+        <span className={styles.titleText}>{title}</span>
       </button>
       <nav>
         <Button

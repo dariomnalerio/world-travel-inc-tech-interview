@@ -18,6 +18,11 @@
   padding-inline: 1.5rem;
   border-radius: var(--radius-lg);
   transition: filter 0.5 ease;
+
+  @media screen and (max-width: 360px) {
+    font-size: var(--fs-sm);
+    padding: 0.5rem 1rem;
+  }
 }
 
 .styledBtn[data-variant="primary"] {
