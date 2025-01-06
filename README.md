@@ -149,7 +149,7 @@ For API documentation, refer to [swagger](http://ec2-18-216-189-146.us-east-2.co
 
 ## Testing
 
-You can run tests either locally or on the
+You can run tests either locally or on the test environment
 
 ```bash
 # Back-end tests
