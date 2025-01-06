@@ -4,7 +4,9 @@ import { ErrorResponse, RandomImageResponse, Result } from "../types";
 
 export async function getRandomDog(userId?: string): Promise<Result<ErrorResponse, RandomImageResponse>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/dog/random?userID=${userId}`, {
+    const fetchUrl = userId ? `${API_BASE_URL}/dog/random?userID=${userId}` : `${API_BASE_URL}/dog/random`;
+
+    const res = await fetch(fetchUrl, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
