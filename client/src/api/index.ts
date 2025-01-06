@@ -1,2 +1,3 @@
 const env = import.meta.env.MODE
-export const API_BASE_URL = env === "development" ? "/api" : "http://server:8080/api/v1"
+const API_URL = import.meta.env.VITE_API_URL
+export const API_BASE_URL = env !== "production" ? "/api" : API_URL
