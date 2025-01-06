@@ -5,12 +5,10 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-RUN mkdir -p /etc/nginx/templates
-COPY nginx.conf /etc/nginx/templates/nginx.conf.template
+FROM caddy:alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/caddy
+COPY Caddyfile /etc/caddy/Caddyfile
+
 EXPOSE 80
-# Run nginx in foreground
-CMD ["/bin/sh", "-c", "envsubst '${VITE_API_URL}' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile"]
