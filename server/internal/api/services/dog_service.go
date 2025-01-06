@@ -7,12 +7,14 @@ import (
 )
 
 type DogService struct {
-	dogRepo repositories.DogRepository
+	dogRepo       repositories.DogRepository
+	likedImgsRepo repositories.LikedImagesRepository
 }
 
-func NewDogService(dogRepo repositories.DogRepository) *DogService {
+func NewDogService(dogRepo repositories.DogRepository, likedImgsRepo repositories.LikedImagesRepository) *DogService {
 	return &DogService{
-		dogRepo: dogRepo,
+		dogRepo:       dogRepo,
+		likedImgsRepo: likedImgsRepo,
 	}
 }
 
@@ -40,4 +42,27 @@ func (s *DogService) GetRandomImage() (string, error) {
 	}
 
 	return imageURL, nil
+}
+
+// GetRandomImageAndCheckLike returns a random dog image URL and checks if the image has been liked by the user.
+// It takes a user ID as input and returns the image URL, a boolean indicating if the image has been liked by the user,
+// and an error if any.
+func (s *DogService) GetRandomImageAndCheckLike(userID string) (string, bool, error) {
+	imageURL, err := s.GetRandomImage()
+	if err != nil {
+		return "", false, err
+	}
+
+	likedImages, err := s.likedImgsRepo.GetLikedImages(userID)
+	if err != nil {
+		return "", false, err
+	}
+
+	for _, img := range likedImages {
+		if img == imageURL {
+			return img, true, nil
+		}
+	}
+
+	return imageURL, false, nil
 }

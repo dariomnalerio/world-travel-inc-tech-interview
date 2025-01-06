@@ -25,12 +25,30 @@ func NewDogHandler(dogService *services.DogService) *DogHandler {
 //	@Tags			dog
 //	@Accept			json
 //	@Produce		json
+//
+//	@Param			userID	query	string	false	"User ID"
+//
 //	@Success		200		{string}	models.GetRandomImageResponse
 //	@Failure		400		{object}	utils.ErrorResponse
 //	@Router			/dog/random [get]
 func (h *DogHandler) GetRandomImage(c *gin.Context) {
-	img, err := h.dogHandler.GetRandomImage()
+	userID := c.DefaultQuery("userID", "")
 
+	if userID == "" {
+		img, err := h.dogHandler.GetRandomImage()
+		if err != nil {
+			utils.HandleError(c, err)
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"image_url": img,
+			"liked":     false,
+		})
+		return
+	}
+
+	img, isLiked, err := h.dogHandler.GetRandomImageAndCheckLike(userID)
 	if err != nil {
 		utils.HandleError(c, err)
 		return
@@ -38,6 +56,6 @@ func (h *DogHandler) GetRandomImage(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"image_url": img,
+		"liked":     isLiked,
 	})
-
 }

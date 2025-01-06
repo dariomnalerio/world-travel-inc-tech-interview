@@ -215,6 +215,11 @@ paths:
       consumes:
       - application/json
       description: Returns a random dog image URL from the Dog API.
+      parameters:
+      - description: User ID
+        in: query
+        name: userID
+        type: string
       produces:
       - application/json
       responses:

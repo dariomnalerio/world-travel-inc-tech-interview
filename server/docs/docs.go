@@ -136,6 +136,14 @@ const docTemplate = `{
                     "dog"
                 ],
                 "summary": "Returns a random dog image URL.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

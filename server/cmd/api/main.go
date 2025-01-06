@@ -39,13 +39,13 @@ func main() {
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
 
-	dogRepo := repositories.NewDogAPIRepository(cfg.DogApiBaseURL)
-	dogService := services.NewDogService(dogRepo)
-	dogHandler := handlers.NewDogHandler(dogService)
-
 	likedImagesRepo := repositories.NewLikedImagesRepository(db)
 	likedImagesService := services.NewLikedImagesService(likedImagesRepo, userRepo)
 	likedImagesHandler := handlers.NewLikedImagesHandler(likedImagesService)
+
+	dogRepo := repositories.NewDogAPIRepository(cfg.DogApiBaseURL)
+	dogService := services.NewDogService(dogRepo, likedImagesRepo)
+	dogHandler := handlers.NewDogHandler(dogService)
 
 	server := server.NewServer(*userHandler, *dogHandler, *likedImagesHandler)
 
