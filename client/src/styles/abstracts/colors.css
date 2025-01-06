@@ -9,7 +9,7 @@
   --clr-destructive: #e63946;
 } */
 
-:root {
+/* :root {
   --clr-text: hsl(214, 88%, 3%);
   --clr-bg: hsl(218, 80%, 98%);
   --clr-border: hsl(215, 85%, 90%);
@@ -18,4 +18,19 @@
   --clr-accent: hsl(302, 82%, 62%);
   --clr-white: #fff;
   --clr-destructive: #e63946;
+} */
+
+:root {
+  --clr-text: hsl(207, 82%, 2%);
+  --clr-bg: hsl(214, 78%, 96%);
+  --clr-border: hsl(214, 78%, 86%);
+  --clr-primary: hsl(208, 81%, 55%);
+  --clr-secondary: hsl(292, 81%, 71%);
+  --clr-accent: hsl(320, 81%, 61%);
+  --clr-white: hsl(0, 0%, 98%);
+  --clr-destructive: #e63946;
+
+  --gradient-1: hsla(208, 81%, 55%, 0.1);
+  --gradient-2: hsla(277, 83%, 73%, 0.3);
+  --gradient-3: hsla(302, 82%, 62%, 0.3);
 }

@@ -31,9 +31,9 @@ const CardSection = ({
           <div className={styles.imgLoading}>
             <Loader2 />
           </div>
-        ) : (
+        ) : currentUrl ? (
           <img className={styles.img} src={currentUrl} alt="Random Dog" />
-        )}
+        ) : null}
       </Card.Content>
       <Card.Footer className={styles.cardFooter}>
         <Tooltip text={tooltipText}>
@@ -45,7 +45,7 @@ const CardSection = ({
           >
             <Heart
               data-testid="heartIcon"
-              fill="#ffffff"
+              fill="#2f92e9"
               fillOpacity={likeCurrentDog ? 1 : 0}
               size={16}
             />

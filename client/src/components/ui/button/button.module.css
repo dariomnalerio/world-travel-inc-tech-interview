@@ -13,7 +13,6 @@
   composes: button;
   border: none;
   background-color: var(--clr-primary);
-  color: var(--clr-white);
   padding-block: 1.15rem;
   padding-inline: 1.5rem;
   border-radius: var(--radius-lg);

@@ -1,4 +1,4 @@
-import { useOptimistic, useState, useTransition } from "react";
+import { useEffect, useOptimistic, useState, useTransition } from "react";
 import {
   likeDogImage as likeDog,
   unlikeDogImage as unlikeDog,
@@ -69,6 +69,13 @@ const useLikeImage = (
       throw error;
     }
   };
+
+  useEffect(() => {
+    setLikeState({
+      isLiked: initialLiked,
+      isLoading: false,
+    });
+  }, [imageUrl, initialLiked]);
 
   return {
     isLiked: optimisticLikeState.isLiked,

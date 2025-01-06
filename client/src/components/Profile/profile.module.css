@@ -1,0 +1,68 @@
+@import url("../ui/button/button.module.css");
+@import url("../ui/card/card.module.css");
+
+.section {
+  max-width: 1200px;
+  width: 100%;
+}
+.title {
+  font-size: var(--fs-xl);
+  color: var(--clr-primary);
+  font-weight: var(--fw-bold);
+}
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+@media screen and (max-width: 480px) {
+  .sectionHeader {
+    justify-content: center;
+  }
+}
+.dogCardContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.dogCard {
+  composes: card;
+  padding: 0 0.5rem 1rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.dogCard img {
+  width: 100%;
+  height: 300px;
+  object-fit: contain;
+  display: block;
+}
+
+.dogCardFooter {
+  padding-top: 1rem;
+  border-top: 1px solid var(--clr-border, #eee);
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.styledBtn {
+  composes: styledBtn;
+  gap: 0.25rem;
+}
+
+.noLikedDogs {
+  grid-column: span 3;
+  font-size: var(--fs-lg);
+  color: var(--clr-text);
+  font-weight: var(--fw-bold);
+  text-align: center;
+  margin-top: 4rem;
+}

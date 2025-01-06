@@ -1,11 +1,18 @@
 @import url("../abstracts/index.css");
-@import url("https://fonts.googleapis.com/css?family=Belgrano:900|Belgrano:700|Belgrano:500|Belgrano:400");
+@import url("https://fonts.googleapis.com/css?family=Unbounded:900|Unbounded:700|Unbounded:500|Unbounded:400");
 body,
 #root {
   max-width: 100vw;
   min-height: 100vh;
   background-color: var(--clr-bg);
-  font-family: "Belgrano";
+  background-image: radial-gradient(
+    125% 125% at 50% 10%,
+    var(--clr-bg) 5%,
+    var(--gradient-1) 45%,
+    var(--gradient-2) 65%
+  );
+  backdrop-filter: blur(100px);
+  font-family: "Unbounded";
   font-weight: var(--fw-normal);
   overflow-x: hidden;
   letter-spacing: 0.5px;

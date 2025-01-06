@@ -50,3 +50,7 @@ export interface LikeDogImageResponse {
   imageUrl: string;
   success: true;
 }
+
+export interface GetLikedImagesResponse {
+  likedImages: string[];
+}

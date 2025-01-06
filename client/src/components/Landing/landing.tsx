@@ -5,11 +5,13 @@ import { JSX, useCallback, useEffect } from "react";
 import { CardSection } from "./card-section";
 import { useAuth } from "../../hooks/use-auth";
 import { useLikeImage } from "../../hooks/use-like-image";
+import { useView } from "../../hooks/use-view";
+import { Tooltip } from "../ui/tooltip/tooltip";
 
 const Landing = (): JSX.Element => {
+  const { changeView } = useView();
   const { userId } = useAuth();
   const { fetchNextDog, isFetching, currentUrl } = useGetRandomDog();
-  // TODO: handle unlogged user case
   const { isLiked, likeDogImage, unlikeDogImage } = useLikeImage(
     userId!,
     currentUrl
@@ -34,12 +36,6 @@ const Landing = (): JSX.Element => {
     fetchNextDog();
   }, [fetchNextDog]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" || e.key === "Space" || e.key === "ArrowRight") {
-      handleFetchNextDog();
-    }
-  };
-
   useEffect(() => {
     // fetches twice in development
     if (!currentUrl) {
@@ -47,24 +43,37 @@ const Landing = (): JSX.Element => {
     }
   }, [currentUrl, handleFetchNextDog]);
 
+  const handleGoToProfile = () => {
+    if (!userId) {
+      return;
+    }
+    changeView("profile");
+  };
+
+  const tooltipText = !userId ? "You must be logged in" : "";
+
   return (
-    <MainContentLayout onKeyDown={handleKeyDown}>
+    <MainContentLayout>
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h1 className={styles.title}>Random Dog</h1>
-          <button className={styles.styledBtn} data-variant="accent">
-            Show Liked Dogs
-          </button>
+          <Tooltip text={tooltipText}>
+            <button
+              className={styles.styledBtn}
+              data-variant="accent"
+              onClick={handleGoToProfile}
+            >
+              Show Liked Dogs
+            </button>
+          </Tooltip>
         </div>
 
         <CardSection
-          {...{
-            currentUrl,
-            fetchNextDog: handleFetchNextDog,
-            handleLike: handleLikeClick,
-            isFetching,
-            likeCurrentDog: isLiked,
-          }}
+          currentUrl={currentUrl}
+          fetchNextDog={handleFetchNextDog}
+          handleLike={handleLikeClick}
+          isFetching={isFetching}
+          likeCurrentDog={isLiked}
         />
       </section>
     </MainContentLayout>

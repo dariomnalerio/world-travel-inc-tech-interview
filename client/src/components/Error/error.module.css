@@ -1,0 +1,21 @@
+.errorContainer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--clr-text);
+  text-align: center;
+  padding-inline: 1rem;
+}
+
+.errorTitle {
+  color: var(--clr-destructive);
+  font-size: var(--fs-3xl);
+  font-weight: var(--fw-bold);
+  margin-bottom: 10px;
+}
+
+.errorMessage {
+  font-size: var(--fs-lg);
+}

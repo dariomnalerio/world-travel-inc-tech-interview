@@ -1,6 +1,6 @@
 import { API_BASE_URL } from ".";
 import { ErrorCodes } from "../helpers/errors";
-import { ErrorResponse, LikeDogImageResponse, Result } from "../types";
+import { ErrorResponse, GetLikedImagesResponse, LikeDogImageResponse, Result } from "../types";
 
 export async function likeDogImage(userId: string, imageUrl: string): Promise<Result<ErrorResponse, LikeDogImageResponse>> {
   try {
@@ -79,6 +79,48 @@ export async function unlikeDogImage(userId: string, imageUrl: string): Promise<
     }
   } catch (error) {
     console.error("Unlike dog image error:", error);
+
+    return {
+      data: null,
+      error: {
+        code: "database_error",
+        message: ErrorCodes.database_error,
+      }
+    }
+  }
+}
+
+export async function getLikedDogImages(userId: string): Promise<Result<ErrorResponse, GetLikedImagesResponse>> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/liked_images/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      const errorCode = data.code as keyof typeof ErrorCodes;
+      return {
+        data: null,
+        error: {
+          code: errorCode ?? "database_error",
+          message: ErrorCodes[errorCode] ?? ErrorCodes.database_error,
+        }
+      }
+    }
+    const likedImages = data.images;
+    return {
+      error: null,
+      data: {
+        likedImages
+      },
+    }
+  } catch (error) {
+    console.error("Get liked dog images error:", error);
 
     return {
       data: null,

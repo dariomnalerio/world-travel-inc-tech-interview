@@ -8,6 +8,9 @@ import Footer from "./components/Layout/footer";
 import Register from "./components/Auth/register/register";
 import { useAuth } from "./hooks/use-auth";
 import { verifyAuth } from "./api/auth";
+import Profile from "./components/Profile/profile";
+import { ErrorBoundary } from "react-error-boundary";
+import Error from "./components/Error/error";
 
 // function that switches between views
 const renderView = (currentView: View): JSX.Element => {
@@ -19,7 +22,7 @@ const renderView = (currentView: View): JSX.Element => {
     case "register":
       return <Register />;
     case "profile":
-      return <div>esto es el perfil</div>;
+      return <Profile />;
     default:
       return <Landing />;
   }
@@ -44,8 +47,10 @@ function App(): JSX.Element {
   }, [updateUserId, userId]);
   return (
     <React.Fragment>
-      <Header title="Placeholder" />
-      {renderView(currentView)}
+      <Header title="PawPics" />
+      <ErrorBoundary fallback={<Error />}>
+        {renderView(currentView)}
+      </ErrorBoundary>
       <Footer />
     </React.Fragment>
   );
