@@ -27,7 +27,8 @@ export interface AuthCredentials {
 }
 
 export interface RandomImageResponse {
-  image_url: string
+  imageUrl: string
+  liked: boolean
 }
 
 export interface LoginResponse {

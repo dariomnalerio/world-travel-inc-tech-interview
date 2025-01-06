@@ -11,10 +11,11 @@ import { Tooltip } from "../ui/tooltip/tooltip";
 const Landing = (): JSX.Element => {
   const { changeView } = useView();
   const { userId } = useAuth();
-  const { fetchNextDog, isFetching, currentUrl } = useGetRandomDog();
+  const { fetchNextDog, isFetching, currentUrl, liked } = useGetRandomDog();
   const { isLiked, likeDogImage, unlikeDogImage } = useLikeImage(
     userId!,
-    currentUrl
+    currentUrl,
+    liked
   );
 
   const handleLikeClick = async () => {

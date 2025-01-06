@@ -2,9 +2,9 @@ import { API_BASE_URL } from "."
 import { ErrorCodes } from "../helpers/errors";
 import { ErrorResponse, RandomImageResponse, Result } from "../types";
 
-export async function getRandomDog(): Promise<Result<ErrorResponse, RandomImageResponse>> {
+export async function getRandomDog(userId?: string): Promise<Result<ErrorResponse, RandomImageResponse>> {
   try {
-    const res = await fetch(`${API_BASE_URL}/dog/random`, {
+    const res = await fetch(`${API_BASE_URL}/dog/random?userID=${userId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -23,10 +23,13 @@ export async function getRandomDog(): Promise<Result<ErrorResponse, RandomImageR
         }
       }
     }
-
+    const { image_url, liked } = data;
     return {
       error: null,
-      data
+      data: {
+        imageUrl: image_url,
+        liked,
+      }
     }
   } catch (error) {
     console.error("Get random dog error:", error);
