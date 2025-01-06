@@ -4,7 +4,6 @@ import { useView } from "./hooks/use-view";
 import { View } from "./types";
 import Login from "./components/Auth/login/login";
 import Landing from "./components/Landing/landing";
-import Footer from "./components/Layout/footer";
 import Register from "./components/Auth/register/register";
 import { useAuth } from "./hooks/use-auth";
 import { verifyAuth } from "./api/auth";
@@ -51,7 +50,6 @@ function App(): JSX.Element {
       <ErrorBoundary fallback={<Error />}>
         {renderView(currentView)}
       </ErrorBoundary>
-      <Footer />
     </React.Fragment>
   );
 }
